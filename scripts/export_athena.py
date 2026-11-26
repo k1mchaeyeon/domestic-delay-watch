@@ -68,7 +68,8 @@ keys = {(r["dep"], r["arr"]) for r in data["routes"]}
 RT = " OR ".join(f"(airport='{a}' AND other_airport='{b}')" for a, b in keys)
 
 data["route_hour"] = num(q(f"""SELECT airport AS dep, other_airport AS arr, hour(sched_dt) AS h,
-  count(*) AS flights, {BASEN} AS base, {LATE} AS late, round(avg(CASE WHEN use_delay THEN delay_min END),1) AS avg_delay
+  count(*) AS flights, {BASEN} AS base, {LATE} AS late, round(avg(CASE WHEN use_delay THEN delay_min END),1) AS avg_delay,
+  approx_percentile(CASE WHEN use_delay THEN delay_min END, 0.5) AS p50, approx_percentile(CASE WHEN use_delay THEN delay_min END, 0.9) AS p90
 {DEP} AND ({RT}) GROUP BY 1,2,3"""))
 data["route_airline"] = num(q(f"""SELECT airport AS dep, other_airport AS arr, airline,
   count(*) AS flights, {BASEN} AS base, {LATE} AS late, {CANCEL} AS cancelled,
