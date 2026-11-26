@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>국내선 지연 워치</title>
+<link rel="stylesheet" href="assets/paperlogy.css">
+<style>
+:root {
+  --bg: #f3f5fa; --card: #ffffff; --ink: #0b1220; --muted: #5a6579; --line: #e3e7ef; --grid: #edf0f5;
+  --blue: #2f5bff; --blue-ink: #ffffff; --blue-soft: #e9eeff; --ok: #8a94a6; --warn: #c97a00; --bad: #e03e44;
+  --shadow: 0 1px 2px rgba(11,18,32,.04), 0 8px 24px rgba(11,18,32,.06);
+  --hero: #0b1220; --hero-ink: #f4f6fb; --hero-muted: #9aa6bd; --amber: #ffb224;
+  --m-bg: #05070c; --m-land: #18213a; --m-border: #2c3857; --m-label: #7c88a4; --m-ink: #eef1f8;
+  --p-ok: #a7b1c6; --p-warn: #ffb224; --p-bad: #ff6464; --p-sel: #8fa8ff;
+  --paper: #f7f8fc; --paper-ink: #0b1220; --paper-muted: #606b80; --paper-line: #d7dcea;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --display: "Paperlogy", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --sans: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #090c13; --card: #121722; --ink: #eef1f6; --muted: #98a2b3; --line: #222a39; --grid: #1a2030;
+    --blue: #6f8fff; --blue-ink: #0b1220; --blue-soft: #18224a; --ok: #6f7a8f; --warn: #f0a52b; --bad: #ff6b6b;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); --hero: #141b2b; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; word-break: keep-all; overflow-wrap: anywhere; }
+button, input, select { font: inherit; color: inherit; }
+.num { font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
+
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; margin-bottom: 20px; }
+.brand span { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; color: var(--blue); font-weight: 600; }
+.brand h1 { font-family: var(--display); font-size: clamp(1.35rem, 3.4vw, 1.75rem); line-height: 1.15; margin: 2px 0 0; }
+.meta { font-size: 12.5px; color: var(--muted); text-align: right; }
+.tabs { display: inline-flex; gap: 4px; padding: 5px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow); margin-bottom: 20px; max-width: 100%; overflow-x: auto; }
+.tabs button { border: 0; background: transparent; padding: 8px 16px; border-radius: 999px; cursor: pointer; color: var(--muted); white-space: nowrap; font-weight: 500; transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out), transform 140ms var(--ease-out); }
+.tabs button small { font-family: var(--mono); font-size: 10.5px; margin-right: 6px; opacity: .7; }
+.tabs button[aria-selected="true"] { background: var(--blue); color: var(--blue-ink); }
+.tabs button:active { transform: scale(.97); }
+@media (hover: hover) { .tabs button:not([aria-selected="true"]):hover { color: var(--ink); background: var(--grid); } }
+.view { display: flex; flex-direction: column; gap: 20px; }
+.view[hidden] { display: none; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); padding: 22px 24px; min-width: 0; }
+.card h2 { font-family: var(--display); font-size: 1.15rem; margin: 0 0 4px; }
+.card .q { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--blue); font-weight: 600; margin: 0 0 6px; }
+.card .sub { margin: 0 0 14px; color: var(--muted); font-size: 13.5px; max-width: 78ch; }
+.smp { margin-left: 8px; font-size: 11px; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; vertical-align: middle; white-space: nowrap; font-family: var(--sans); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+.note { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+
+.hero { background: var(--hero); color: var(--hero-ink); border-radius: 24px; padding: 28px 30px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: center; position: relative; overflow: hidden; }
+.hero::after { content: ""; position: absolute; right: -60px; top: -80px; width: 340px; height: 340px; border-radius: 50%; border: 1px dashed rgba(255,255,255,.12); pointer-events: none; }
+.hero .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; color: var(--hero-muted); }
+.hero h2 { font-family: var(--display); font-size: clamp(1.4rem, 3vw, 2.1rem); line-height: 1.25; margin: 10px 0 12px; text-wrap: balance; }
+.hero h2 b { color: var(--amber); }
+.hero p { margin: 0; color: var(--hero-muted); max-width: 52ch; font-size: 14px; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; position: relative; z-index: 1; }
+.kpi { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.kpi span { font-size: 12.5px; color: var(--hero-muted); }
+.kpi b { font-family: var(--display); font-size: 1.9rem; line-height: 1.05; }
+.kpi b small { font-family: var(--sans); font-size: 13px; font-weight: 400; color: var(--hero-muted); margin-left: 4px; }
+.kpi b.hot { color: var(--amber); }
+@media (max-width: 820px) { .hero { grid-template-columns: 1fr; } }
+
+.pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; transition: transform 140ms var(--ease-out), background-color 140ms var(--ease-out); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip:active { transform: scale(.96); }
+.bar-row { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 7.5em; gap: 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
+.bar-row:first-child { border-top: 0; }
+.bar-row .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-row .nm small { color: var(--muted); font-family: var(--mono); margin-left: 4px; }
+.bar-row .tr { height: 10px; background: var(--grid); border-radius: 5px; overflow: hidden; }
+.bar-row .tr i { display: block; height: 100%; border-radius: 5px; background: var(--ok); }
+.bar-row .tr i.w { background: var(--warn); } .bar-row .tr i.b { background: var(--bad); }
+.bar-row .v { text-align: right; font-variant-numeric: tabular-nums; }
+.bar-row .v small { color: var(--muted); margin-left: 4px; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart svg text { fill: var(--muted); font-size: 11px; font-family: var(--sans); font-variant-numeric: tabular-nums; }
+.chart svg text.strong { fill: var(--ink); font-weight: 600; }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); border-radius: 8px; padding: 6px 10px; font-size: 12px; white-space: nowrap; z-index: 50; opacity: 0; transition: opacity 120ms var(--ease-out); }
+.stack { display: flex; height: 28px; border-radius: 8px; overflow: hidden; margin: 6px 0 10px; }
+.stack i { display: block; height: 100%; }
+.leg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
+.leg span { display: inline-flex; align-items: center; gap: 6px; }
+.leg i { width: 10px; height: 10px; border-radius: 3px; }
+
+/* flight search + boarding pass */
+.search { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.search input, .search select { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 9px 12px; min-width: 0; }
+.search input { width: 12em; font-family: var(--mono); text-transform: uppercase; }
+.pass { background: var(--paper); color: var(--paper-ink); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--paper-line); }
+.pass .band { background: #2f5bff; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; font-size: 12.5px; }
+.pass .band b { font-family: var(--mono); font-size: 14px; letter-spacing: .06em; }
+.pass .body { padding: 18px 20px 20px; display: grid; gap: 16px; }
+.pass .rt { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 10px; }
+.pass .rt .ap b { font-family: var(--display); font-size: 2.2rem; line-height: 1; display: block; }
+.pass .rt .ap span { font-size: 12.5px; color: var(--paper-muted); }
+.pass .rt .ap:last-child { text-align: right; }
+.pass .rt .mid { font-family: var(--mono); font-size: 12px; color: var(--paper-muted); padding-bottom: 6px; }
+.pass .cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; border-top: 1px dashed var(--paper-line); padding-top: 14px; }
+.pass .cells div span { display: block; font-size: 11.5px; color: var(--paper-muted); }
+.pass .cells div b { font-family: var(--display); font-size: 1.15rem; }
+.st { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(255,255,255,.2); }
+.c-warn { color: var(--warn); } .c-bad { color: var(--bad); } .c-ok { color: var(--muted); }
+
+/* map */
+.mapcard { position: relative; border-radius: 24px; overflow: hidden; background: var(--m-bg); color: var(--m-ink); box-shadow: var(--shadow); }
+.mapcard svg { display: block; width: 100%; height: auto; }
+.mapcard .apl { font-size: 11px; fill: var(--m-label); font-family: var(--mono); }
+.mapcard .apd { fill: var(--m-border); }
+.mapcard .float { position: absolute; left: 16px; top: 16px; right: 16px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; pointer-events: none; }
+.mapcard .float div { background: rgba(13,18,30,.78); border: 1px solid rgba(255,255,255,.09); border-radius: 999px; padding: 6px 14px; }
+.mapcard .float b { color: var(--amber); }
+.slider { display: flex; align-items: center; gap: 12px; padding: 12px 16px 16px; color: var(--m-label); font-size: 12.5px; }
+.slider input { flex: 1; accent-color: var(--p-sel); }
+
+/* day timeline */
+.tl { position: relative; }
+.tl svg text { font-size: 11px; }
+.why { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 18px; align-items: start; }
+.why .big { font-family: var(--display); font-size: 2.4rem; line-height: 1; }
+.why .big small { font-size: 14px; font-family: var(--sans); color: var(--muted); margin-left: 4px; }
+.flow { display: flex; align-items: stretch; gap: 0; margin-top: 6px; overflow-x: auto; padding-bottom: 4px; }
+.flow .leg2 { min-width: 140px; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; background: var(--bg); }
+.flow .leg2.me { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue) inset; }
+.flow .leg2 b { font-family: var(--mono); font-size: 13px; display: block; }
+.flow .leg2 span { font-size: 12px; color: var(--muted); display: block; }
+.flow .arr { align-self: center; padding: 0 8px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+table.alt { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.alt th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+table.alt td { padding: 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+table.alt td.id { font-family: var(--mono); font-weight: 600; }
+.calc { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 12px 0; }
+.calc label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
+.calc input { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 8px 12px; color: var(--ink); }
+.answer { font-family: var(--display); font-size: 1.4rem; margin: 6px 0 0; }
+.answer b.ok { color: var(--blue); } .answer b.bad { color: var(--bad); }
+.soon { border: 1.5px dashed var(--line); background: transparent; box-shadow: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span>DOMESTIC DELAY WATCH</span><h1>국내선 지연 워치</h1></div>
+    <div class="meta" id="meta"></div>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="승객 여정">
+    <button role="tab" aria-selected="true" data-v="book"><small>01</small>예약할 때</button>
+    <button role="tab" aria-selected="false" data-v="leave"><small>02</small>집 나서기 전</button>
+    <button role="tab" aria-selected="false" data-v="airport"><small>03</small>공항 · 지연 발생</button>
+    <button role="tab" aria-selected="false" data-v="arrive"><small>04</small>도착</button>
+  </nav>
+
+  <!-- 01 예약할 때 -->
+  <section class="view" id="v-book">
+    <div class="card" style="padding:16px 20px"><div class="pick" id="routes" aria-label="노선"></div></div>
+    <div class="hero" id="hero"></div>
+    <div class="grid2">
+      <div class="card">
+        <p class="q">Q. 하루 중 지연이 가장 많은 시간대는?</p>
+        <h2 id="hour-h">예정 출발 시간대별 지연률</h2>
+        <p class="sub">막대 = 지연률(게이트 출발 15분 초과), 아래 회색 = 운항 편수. 편수가 200편 미만인 시간대는 비웠다.</p>
+        <div class="chart" id="hour"></div>
+      </div>
+      <div class="card">
+        <p class="q">Q. 어느 항공사가 상습적으로 지연되지?</p>
+        <h2>같은 노선 항공사별 지연률</h2>
+        <p class="sub">같은 노선끼리만 비교한다. 오른쪽 = 지연률 · 지연 편 평균 지연.</p>
+        <div id="airline"></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <p class="q">Q. 어느 편이 자주 늦지?</p>
+        <h2>이 노선에서 지연이 잦은 편 TOP 5</h2>
+        <p class="sub">2025년 이후, 지연 판정이 가능한 운항 100편 이상인 편명만.</p>
+        <div id="flights"></div>
+      </div>
+      <div class="card">
+        <p class="q">Q. 늦는 편은 왜 늦었나?</p>
+        <h2>이 노선 지연 사유 비중</h2>
+        <p class="sub">공항공사 공식 지연 사유. "항공기 연결"은 앞 편이 늦게 도착해 이 편도 늦은 경우다.</p>
+        <div id="cause"></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="q">Q. 여름·겨울에 제주 가면 결항 걱정해야 하나?</p>
+      <h2>제주행 월별 결항률</h2>
+      <p class="sub">막대 = 결항률, 진한 부분 = 그중 기상 사유. 출발 공항을 바꿔 볼 수 있다.</p>
+      <div class="pick" id="jeju-pick" style="margin-bottom:12px"></div>
+      <div class="chart" id="jeju"></div>
+    </div>
+  </section>
+
+  <!-- 02 집 나서기 전 -->
+  <section class="view" id="v-leave" hidden>
+    <div class="card" style="padding:16px 20px">
+      <div class="search">
+        <select id="day" aria-label="날짜"></select>
+        <input id="fno" list="fnos" placeholder="편명 (예: KE1626)" aria-label="편명" autocomplete="off">
+        <datalist id="fnos"></datalist>
+        <span class="note" style="margin:0">실시간 연결 전이라 수집한 하루를 그대로 다시 보여 준다 <span class="smp">샘플</span></span>
+      </div>
+    </div>
+    <div class="grid2">
+      <div>
+        <p class="q" style="margin:0 0 8px">Q. 내 비행기 지연 여부를 미리 알 수 있을까?</p>
+        <div class="pass" id="pass"></div>
+        <div class="card" style="margin-top:20px">
+          <h2>앞 편 상태로 보는 내 편</h2>
+          <p class="sub">내 비행기는 보통 앞 편을 마치고 온다. 앞 편이 늦게 도착하면 최소 준비 시간(40분) 때문에 내 편 출발도 밀린다.</p>
+          <div id="prevbox"></div>
+        </div>
+      </div>
+      <div>
+        <p class="q" style="margin:0 0 8px">Q. 내가 탈 비행기는 지금 어디쯤 오고 있을까?</p>
+        <div class="mapcard" id="map"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>이 기체의 하루</h2>
+      <p class="sub">같은 등록번호 기체가 그날 뛴 편. 회색 = 예정, 색 = 실제(이륙~착륙). 파란 테두리가 내 편.</p>
+      <div class="tl" id="day-tl"></div>
+    </div>
+  </section>
+
+  <!-- 03 공항 · 지연 발생 -->
+  <section class="view" id="v-airport" hidden>
+    <div class="card">
+      <p class="q">Q. 도대체 내 비행기는 왜 늦는 거지?</p>
+      <h2 id="why-h">왜 늦나</h2>
+      <p class="sub">공식 사유가 없을 때는 관측된 상황(앞 편 지연)을 보여 준다. 원인을 단정하지 않는다.</p>
+      <div id="why"></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <p class="q">Q. 지연되면 얼마나 기다려야 하지?</p>
+        <h2>기다릴 시간 참고 범위</h2>
+        <div id="wait"></div>
+      </div>
+      <div class="card">
+        <p class="q">Q. 늦어지면 다른 편 탈 수 있나?</p>
+        <h2>같은 목적지 다음 편</h2>
+        <p class="sub">실제 탑승 가능 여부는 잔여 좌석과 항공사 변경 조건을 확인해야 한다.</p>
+        <div id="alt"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>그날 지연이 번진 기체</h2>
+      <p class="sub">한 번 생긴 지연이 같은 기체의 다음 편으로 2편 이상 이어진 경우. 누르면 그 기체의 편으로 이동한다.</p>
+      <div id="chains"></div>
+    </div>
+  </section>
+
+  <!-- 04 도착 -->
+  <section class="view" id="v-arrive" hidden>
+    <div class="grid2">
+      <div class="card">
+        <p class="q">Q. 가족이 탄 비행기, 언제 마중 나가면 될까?</p>
+        <h2 id="arr-h">도착 시각</h2>
+        <div id="arr"></div>
+        <p class="note">입국심사·수하물 수취 시간은 포함하지 않는다(국내선은 보통 10~20분).</p>
+      </div>
+      <div class="card">
+        <p class="q">Q. 다음 일정에 맞춰 도착할 수 있을까?</p>
+        <h2>일정까지 남는 여유</h2>
+        <div class="calc">
+          <label>약속 시각<input type="time" id="meet" value="14:00"></label>
+          <label>공항에서 나오는 시간(분)<input type="number" id="out" value="15" min="0" step="5"></label>
+          <label>이동 시간(분)<input type="number" id="move" value="40" min="0" step="5"></label>
+        </div>
+        <div id="margin"></div>
+      </div>
+    </div>
+    <div class="card soon">
+      <h2>다음 단계에서 붙일 것</h2>
+      <p class="sub" style="margin:0">현재 날씨에 따른 결항 위험도(공항 METAR + 과거 기상 결항률), 편 검색 AI 챗봇, 실시간 운항 API 연결.</p>
+    </div>
+  </section>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+(async () => {
+const $ = (id) => document.getElementById(id);
+const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+const pct = (a, b) => b ? (100 * a / b) : null;
+const f1 = (x) => x == null ? '–' : (Math.round(x * 10) / 10).toFixed(1);
+const fN = (x) => x == null ? '–' : Math.round(x).toLocaleString('ko-KR');
+const tone = (r) => r == null ? '' : r >= 25 ? 'b' : r >= 18 ? 'w' : '';
+const hm = (s) => s ? s.slice(11, 16) : '–';
+const toMin = (s) => s ? (+s.slice(11, 13)) * 60 + (+s.slice(14, 16)) : null;
+const isT = (v) => v === true || v === 'true';
+const tip = $('tip');
+const showTip = (e, html) => { tip.innerHTML = html; tip.style.opacity = 1; tip.style.left = (e.clientX + 12) + 'px'; tip.style.top = (e.clientY - 30) + 'px'; };
+const hideTip = () => { tip.style.opacity = 0; };
+
+const load = (name) => (window.__DATA__ && window.__DATA__[name]) ? Promise.resolve(window.__DATA__[name]) : fetch(`data/${name}.json`).then(r => r.json());
+const [H, AP] = await Promise.all([load('history'), load('airports')]);
+const DAYS = ['20261123', '20261124', '20261125'];
+const ROT = {};
+await Promise.all(DAYS.map(async d => { ROT[d] = await load(`rotation_${d}`); }));
+const KO2IATA = Object.fromEntries(Object.entries(AP).map(([k, v]) => [v.ko, k]));
+const ko = (iata) => AP[iata] ? AP[iata].ko : iata;
+
+$('meta').innerHTML = `과거: 항공정보포털 운항 실적 ${H.period.from.slice(0,4)}.${H.period.from.slice(4,6)}~${H.period.to.slice(0,4)}.${H.period.to.slice(4,6)} 국내선 여객<br>편 연결: 한국공항공사 운항 + ADS-B 기체 매칭(11/23~25)`;
+
+// tabs
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => go(b.dataset.v)));
+function go(v) {
+  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.v === v));
+  document.querySelectorAll('.view').forEach(x => x.hidden = x.id !== 'v-' + v);
+}
+
+/* ---------- 01 예약할 때 ---------- */
+let route = H.routes[0];
+const rk = (r) => r.dep + '→' + r.arr;
+const routesBox = $('routes');
+H.routes.forEach(r => {
+  const b = el('button', 'chip', `${r.dep} → ${r.arr}`);
+  b.setAttribute('aria-pressed', r === route);
+  b.onclick = () => { route = r; routesBox.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); renderBook(); };
+  routesBox.append(b);
+});
+
+function renderBook() {
+  const r = route, same = (x) => x.dep === r.dep && x.arr === r.arr;
+  const hours = H.route_hour.filter(same).filter(h => h.base >= 200).sort((a, b) => a.h - b.h);
+  const worst = hours.reduce((m, h) => (!m || h.late / h.base > m.late / m.base) ? h : m, null);
+  const best = hours.reduce((m, h) => (!m || h.late / h.base < m.late / m.base) ? h : m, null);
+  const rate = pct(r.late, r.base);
+  $('hero').innerHTML = `<div><div class="eyebrow">${r.dep} → ${r.arr} · ${H.period.from.slice(0,4)}~${H.period.to.slice(0,4)}</div>
+    <h2>${fN(r.flights)}편 중 <b>${f1(rate)}%</b>가 15분 넘게 늦게 출발했다</h2>
+    <p>${worst ? `가장 늦는 시간대는 <b style="color:var(--amber)">${worst.h}시대(${f1(pct(worst.late, worst.base))}%)</b>, 가장 정시에 가까운 시간대는 ${best.h}시대(${f1(pct(best.late, best.base))}%)다. ` : ''}지연 기준은 게이트 출발이 예정보다 15분을 넘긴 편이다(국토부 기준).</p></div>
+    <div class="kpis"><div class="kpi"><span>지연률</span><b class="hot">${f1(rate)}<small>%</small></b></div>
+    <div class="kpi"><span>평균 지연(전체 편)</span><b>${f1(r.avg_delay)}<small>분</small></b></div>
+    <div class="kpi"><span>결항률</span><b>${f1(pct(r.cancelled, r.flights))}<small>%</small></b></div>
+    <div class="kpi"><span>운항 편수</span><b>${fN(r.flights)}<small>편</small></b></div></div>`;
+  $('hour-h').textContent = `${r.dep} → ${r.arr} 예정 출발 시간대별 지연률`;
+  drawHours(hours);
+  const al = H.route_airline.filter(same).sort((a, b) => b.late / b.base - a.late / a.base);
+  barList($('airline'), al.map(a => ({ name: a.airline, sub: fN(a.flights) + '편', r: pct(a.late, a.base), v2: `${f1(a.avg_delay)}분` })));
+  const fl = H.route_flight.filter(same).sort((a, b) => a.rk - b.rk);
+  barList($('flights'), fl.map(a => ({ name: a.flight, sub: a.airline, r: pct(a.late, a.base), v2: `${fN(a.base)}편` })));
+  drawCause(H.route_cause.filter(same));
+}
+
+function barList(box, rows) {
+  box.innerHTML = '';
+  const max = Math.max(40, ...rows.map(x => x.r || 0));
+  rows.forEach(x => {
+    const row = el('div', 'bar-row');
+    row.innerHTML = `<div class="nm">${x.name}<small>${x.sub}</small></div><div class="tr"><i class="${tone(x.r)}" style="width:${(x.r || 0) / max * 100}%"></i></div><div class="v"><b>${f1(x.r)}%</b><small>${x.v2}</small></div>`;
+    box.append(row);
+  });
+  if (!rows.length) box.textContent = '자료 없음';
+}
+
+function drawHours(hours) {
+  const W = 560, Hh = 230, pad = { l: 34, r: 8, t: 14, b: 58 };
+  const hs = Array.from({ length: 19 }, (_, i) => i + 6);
+  const bw = (W - pad.l - pad.r) / hs.length;
+  const byH = Object.fromEntries(hours.map(h => [h.h, h]));
+  const maxR = Math.max(40, ...hours.map(h => pct(h.late, h.base)));
+  const maxN = Math.max(...hours.map(h => h.flights), 1);
+  const y = (v) => pad.t + (Hh - pad.t - pad.b) * (1 - v / maxR);
+  let s = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="시간대별 지연률">`;
+  [0, 10, 20, 30, 40].filter(v => v <= maxR).forEach(v => { s += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${pad.l - 6}" y="${y(v) + 4}" text-anchor="end">${v}%</text>`; });
+  hs.forEach((h, i) => {
+    const d = byH[h], x = pad.l + i * bw + 3, w = bw - 6;
+    if (d) {
+      const r = pct(d.late, d.base), c = tone(r) === 'b' ? 'var(--bad)' : tone(r) === 'w' ? 'var(--warn)' : 'var(--ok)';
+      s += `<rect data-h="${h}" x="${x}" y="${y(r)}" width="${w}" height="${y(0) - y(r)}" rx="3" fill="${c}"/>`;
+      const nh = 22 * d.flights / maxN;
+      s += `<rect x="${x}" y="${Hh - 20 - nh}" width="${w}" height="${nh}" rx="2" fill="var(--grid)"/>`;
+    }
+    if (h % 2 === 0) s += `<text x="${x + w / 2}" y="${Hh - 28}" text-anchor="middle">${h}시</text>`;
+  });
+  s += `<text x="${pad.l}" y="${Hh - 4}">편수</text></svg>`;
+  $('hour').innerHTML = s;
+  $('hour').querySelectorAll('rect[data-h]').forEach(rc => {
+    const d = byH[rc.dataset.h];
+    rc.addEventListener('pointermove', e => showTip(e, `${d.h}시대 · 지연률 <b>${f1(pct(d.late, d.base))}%</b> · ${fN(d.flights)}편 · 평균 ${f1(d.avg_delay)}분`));
+    rc.addEventListener('pointerleave', hideTip);
+  });
+}
+
+const CAUSE_COLOR = { '항공기 연결': 'var(--bad)', '항공교통흐름': 'var(--warn)', '공항·출입국 절차': '#5b7cfa', '기상': '#2fa3b5', '항공기 정비': '#8a6df0', '여객·화물처리': '#9aa6bd', '운항·승무원': '#c58b5b', '지상조업': '#7c88a4', '기타': 'var(--grid)' };
+function drawCause(rows) {
+  const tot = rows.reduce((s, r) => s + r.late, 0);
+  const rs = rows.filter(r => r.cause_group !== '미확정(숫자 코드)' && r.cause_group !== '회항').sort((a, b) => b.late - a.late);
+  const box = $('cause'); box.innerHTML = '';
+  if (!tot) { box.textContent = '자료 없음'; return; }
+  const top = rs[0];
+  box.append(el('p', 'answer', ''));
+  box.firstChild.innerHTML = `늦은 편의 <b class="bad">${f1(pct(top.late, tot))}%</b>는 "${top.cause_group}"`;
+  const st = el('div', 'stack');
+  rs.forEach(r => { const i = el('i'); i.style.width = pct(r.late, tot) + '%'; i.style.background = CAUSE_COLOR[r.cause_group] || 'var(--ok)'; i.title = `${r.cause_group} ${f1(pct(r.late, tot))}%`; st.append(i); });
+  box.append(st);
+  const lg = el('div', 'leg');
+  rs.slice(0, 6).forEach(r => { const s = el('span'); s.innerHTML = `<i style="background:${CAUSE_COLOR[r.cause_group] || 'var(--ok)'}"></i>${r.cause_group} ${f1(pct(r.late, tot))}%`; lg.append(s); });
+  box.append(lg);
+}
+
+// 제주 결항
+const jejuOrigins = ['전체', ...[...new Set(H.jeju_month.map(r => r.dep))].filter(a => H.jeju_month.filter(r => r.dep === a).reduce((s, r) => s + r.flights, 0) > 5000)];
+let jo = '전체';
+jejuOrigins.forEach(a => { const b = el('button', 'chip', a === '전체' ? '전체 출발 공항' : a + ' 출발'); b.setAttribute('aria-pressed', a === jo); b.onclick = () => { jo = a; $('jeju-pick').querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); drawJeju(); }; $('jeju-pick').append(b); });
+function drawJeju() {
+  const m = Array.from({ length: 12 }, (_, i) => ({ m: i + 1, f: 0, c: 0, w: 0 }));
+  H.jeju_month.filter(r => r.m && (jo === '전체' || r.dep === jo)).forEach(r => { const x = m[r.m - 1]; x.f += r.flights; x.c += r.cancelled; x.w += r.cancelled_weather; });
+  const W = 900, Hh = 200, pad = { l: 38, r: 8, t: 16, b: 26 }, bw = (W - pad.l - pad.r) / 12;
+  const maxR = Math.max(1, ...m.map(x => pct(x.c, x.f) || 0)) * 1.15;
+  const y = (v) => pad.t + (Hh - pad.t - pad.b) * (1 - v / maxR);
+  let s = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="제주행 월별 결항률">`;
+  [0, 0.5, 1, 1.5, 2, 3, 4].filter(v => v <= maxR).forEach(v => { s += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${pad.l - 6}" y="${y(v) + 4}" text-anchor="end">${v}%</text>`; });
+  m.forEach((x, i) => {
+    const r = pct(x.c, x.f) || 0, rw = pct(x.w, x.f) || 0, X = pad.l + i * bw + 10, w = bw - 20;
+    s += `<rect data-i="${i}" x="${X}" y="${y(r)}" width="${w}" height="${y(0) - y(r)}" rx="3" fill="var(--blue)" opacity=".25"/>`;
+    s += `<rect x="${X}" y="${y(rw)}" width="${w}" height="${y(0) - y(rw)}" rx="3" fill="var(--blue)" pointer-events="none"/>`;
+    s += `<text x="${X + w / 2}" y="${y(r) - 5}" text-anchor="middle" class="strong">${f1(r)}</text><text x="${X + w / 2}" y="${Hh - 8}" text-anchor="middle">${x.m}월</text>`;
+  });
+  $('jeju').innerHTML = s + '</svg>';
+  $('jeju').querySelectorAll('rect[data-i]').forEach(rc => { const x = m[rc.dataset.i]; rc.addEventListener('pointermove', e => showTip(e, `${x.m}월 · 결항 ${f1(pct(x.c, x.f))}% (기상 ${f1(pct(x.w, x.f))}%) · ${fN(x.f)}편`)); rc.addEventListener('pointerleave', hideTip); });
+}
+
+/* ---------- 편 선택 (02·03·04 공통) ---------- */
+let day = '20261123', cur = null;
+DAYS.forEach(d => { const o = el('option', null, `${d.slice(4, 6)}/${d.slice(6)} (수집분)`); o.value = d; $('day').append(o); });
+$('day').onchange = () => { day = $('day').value; fillList(); pick(defaultFlight()); };
+function fillList() { $('fnos').innerHTML = ''; [...new Set(ROT[day].map(r => r.flight_no))].sort().forEach(f => $('fnos').append(Object.assign(el('option'), { value: f }))); }
+function defaultFlight() {
+  const rows = ROT[day].filter(r => r.delay_origin_type === 'propagated' && r.carried_delay_min >= 20);
+  return rows.sort((a, b) => b.carried_delay_min - a.carried_delay_min)[Math.min(2, rows.length - 1)] || ROT[day][0];
+}
+$('fno').addEventListener('change', () => { const v = $('fno').value.trim().toUpperCase(); const r = ROT[day].find(x => x.flight_no === v); if (r) pick(r); });
+function legsOf(r) { return ROT[day].filter(x => x.reg_no === r.reg_no).sort((a, b) => a.dep_sched_at < b.dep_sched_at ? -1 : 1); }
+function prevOf(r) { const L = legsOf(r), i = L.indexOf(r); return i > 0 ? L[i - 1] : null; }
+
+function pick(r) {
+  cur = r; $('fno').value = r.flight_no;
+  renderPass(); renderPrev(); renderMap(); renderDay(); renderWhy(); renderWait(); renderAlt(); renderArrive();
+}
+
+const STATUS = (r) => r.dep_status || '예정';
+function delayClass(m) { return m == null ? 'c-ok' : m > 45 ? 'c-bad' : m > 15 ? 'c-warn' : 'c-ok'; }
+function renderPass() {
+  const r = cur, d = r.dep_delay_gate_est_min;
+  $('pass').innerHTML = `<div class="band"><span>${r.airline_name} · ${r.reg_no}</span><b>${r.flight_no}</b><span class="st">${STATUS(r)}</span></div>
+  <div class="body"><div class="rt"><div class="ap"><b>${r.dep_airport}</b><span>${ko(r.dep_airport)}</span></div><div class="mid">${r.flight_date}</div><div class="ap"><b>${r.arr_airport}</b><span>${ko(r.arr_airport)}</span></div></div>
+  <div class="cells"><div><span>예정 출발</span><b>${hm(r.dep_sched_at)}</b></div><div><span>이륙</span><b>${hm(r.dep_actual_at)}</b></div>
+  <div><span>게이트 기준 지연</span><b class="${delayClass(d)}">${d == null ? '–' : (d > 0 ? '+' : '') + Math.round(d) + '분'}</b></div><div><span>착륙</span><b>${hm(r.arr_actual_at)}</b></div></div></div>`;
+}
+
+function renderPrev() {
+  const r = cur, p = prevOf(r), box = $('prevbox');
+  if (!r.prev_flight || r.delay_origin_type === 'first_leg' || !p) { box.innerHTML = `<p class="answer">이 편이 이 기체의 <b class="ok">그날 첫 편</b>이라 앞 편 영향이 없다.</p>`; return; }
+  const late = r.prev_arr_delay_min, slack = r.sched_turnaround_min;
+  box.innerHTML = `<div class="flow"><div class="leg2"><b>${r.prev_flight}</b><span>${ko(r.prev_dep_airport)} → ${ko(r.dep_airport)}</span><span>도착 예정 ${hm(r.prev_arr_sched_at)} · 실제 ${hm(r.prev_arr_actual_at)}</span></div>
+  <div class="arr">준비 ${slack == null ? '–' : Math.round(slack) + '분'} →</div><div class="leg2 me"><b>${r.flight_no}</b><span>${ko(r.dep_airport)} → ${ko(r.arr_airport)}</span><span>출발 예정 ${hm(r.dep_sched_at)}</span></div></div>
+  <p class="answer">앞 편이 <b class="${late > 15 ? 'bad' : 'ok'}">${late == null ? '?' : (late > 0 ? Math.round(late) + '분 늦게' : '제시간에')}</b> 도착${r.carried_delay_min > 0 ? ` → 최소 준비 40분을 지키면 내 편은 <b class="bad">${Math.round(r.carried_delay_min)}분</b> 밀린다` : ', 내 편까지 넘어올 지연은 없다'}</p>`;
+}
+
+/* map: 국내 공항 + 앞 편·내 편 경로 */
+let tNow = null;
+function proj(lat, lon) { const x = (lon - 125.9) / (130.0 - 125.9) * 560 + 20, y = (38.7 - lat) / (38.7 - 33.0) * 520 + 30; return [x, y]; }
+function renderMap() {
+  const r = cur, p = prevOf(r), legs = p ? [p, r] : [r];
+  const t0 = toMin(legs[0].dep_actual_at || legs[0].dep_sched_at) - 30, t1 = toMin(r.arr_actual_at || r.arr_sched_at) + 10;
+  if (tNow == null || tNow < t0 || tNow > t1) tNow = Math.max(t0, toMin(r.dep_sched_at) - 60);
+  const mm = (m) => String(Math.floor(m / 60) % 24).padStart(2, '0') + ':' + String(Math.round(m % 60)).padStart(2, '0');
+  let s = `<svg viewBox="0 0 600 580" role="img" aria-label="국내 공항과 기체 위치">`;
+  Object.entries(AP).forEach(([k, a]) => { const [x, y] = proj(a.lat, a.lon); s += `<circle class="apd" cx="${x}" cy="${y}" r="3.5"/><text class="apl" x="${x + 7}" y="${y + 4}">${k}</text>`; });
+  let pos = null, state = '';
+  legs.forEach((l, i) => {
+    const A = AP[l.dep_airport], B = AP[l.arr_airport]; if (!A || !B) return;
+    const [x1, y1] = proj(A.lat, A.lon), [x2, y2] = proj(B.lat, B.lon), cx = (x1 + x2) / 2 + (y2 - y1) * .18, cy = (y1 + y2) / 2 - (x2 - x1) * .18;
+    const me = l === r;
+    s += `<path d="M${x1},${y1} Q${cx},${cy} ${x2},${y2}" fill="none" stroke="${me ? 'var(--p-sel)' : 'var(--m-label)'}" stroke-width="${me ? 2.2 : 1.6}" stroke-dasharray="${me ? '' : '5 5'}"/>`;
+    const a = toMin(l.dep_actual_at), b = toMin(l.arr_actual_at);
+    if (a != null && b != null && tNow >= a && tNow <= b) { const u = (tNow - a) / (b - a), q = 1 - u; pos = [q * q * x1 + 2 * q * u * cx + u * u * x2, q * q * y1 + 2 * q * u * cy + u * u * y2]; state = `${l.flight_no} 비행 중`; }
+    else if (b != null && tNow > b && (i === legs.length - 1 || tNow < toMin(legs[i + 1].dep_actual_at || legs[i + 1].dep_sched_at))) { pos = [x2, y2]; state = `${ko(l.arr_airport)} 지상(${l.flight_no} 착륙 후)`; }
+    else if (i === 0 && a != null && tNow < a) { pos = [x1, y1]; state = `${ko(l.dep_airport)} 지상(${l.flight_no} 출발 전)`; }
+  });
+  if (pos) s += `<circle cx="${pos[0]}" cy="${pos[1]}" r="11" fill="none" stroke="var(--amber)" stroke-width="2" opacity=".5"/><circle cx="${pos[0]}" cy="${pos[1]}" r="5.5" fill="var(--amber)"/>`;
+  s += '</svg>';
+  $('map').innerHTML = `<div class="float"><div>${r.reg_no} · <b>${mm(tNow)}</b> 기준</div><div>${state || '위치 없음'}</div></div>${s}
+    <div class="slider"><span>${mm(t0)}</span><input type="range" id="tslide" min="${t0}" max="${t1}" step="1" value="${tNow}" aria-label="시각"><span>${mm(t1)}</span></div>`;
+  $('tslide').addEventListener('input', e => { tNow = +e.target.value; renderMap(); $('tslide').focus(); });
+}
+
+function renderDay() {
+  const L = legsOf(cur), W = 1200, row = 34, Hh = L.length * row + 30, m0 = Math.min(...L.map(l => toMin(l.dep_sched_at))) - 30, m1 = Math.max(...L.map(l => toMin(l.arr_actual_at || l.arr_sched_at) || 0)) + 30;
+  const x = (m) => 150 + (W - 170) * (m - m0) / (m1 - m0);
+  let s = `<svg viewBox="0 0 ${W} ${Hh}" style="width:100%;height:auto">`;
+  for (let h = Math.ceil(m0 / 60); h * 60 <= m1; h++) s += `<line x1="${x(h * 60)}" x2="${x(h * 60)}" y1="0" y2="${Hh - 20}" stroke="var(--grid)"/><text x="${x(h * 60)}" y="${Hh - 6}" text-anchor="middle">${h}시</text>`;
+  L.forEach((l, i) => {
+    const y = i * row + 6, me = l === cur, d = l.dep_delay_gate_est_min;
+    const c = d > 45 ? 'var(--bad)' : d > 15 ? 'var(--warn)' : 'var(--ok)';
+    s += `<text x="0" y="${y + 17}" class="${me ? 'strong' : ''}">${l.flight_no} ${l.dep_airport}→${l.arr_airport}</text>`;
+    s += `<rect x="${x(toMin(l.dep_sched_at))}" y="${y + 4}" width="${Math.max(2, x(toMin(l.arr_sched_at)) - x(toMin(l.dep_sched_at)))}" height="8" rx="4" fill="var(--grid)"/>`;
+    if (l.dep_actual_at && l.arr_actual_at) s += `<rect x="${x(toMin(l.dep_actual_at))}" y="${y + 14}" width="${Math.max(2, x(toMin(l.arr_actual_at)) - x(toMin(l.dep_actual_at)))}" height="10" rx="5" fill="${c}" ${me ? 'stroke="var(--blue)" stroke-width="2.5"' : ''}/>`;
+    if (l.carried_delay_min > 0) s += `<text x="${x(toMin(l.dep_actual_at || l.dep_sched_at)) - 4}" y="${y + 23}" text-anchor="end" style="fill:var(--bad)">넘어옴 ${Math.round(l.carried_delay_min)}분</text>`;
+  });
+  $('day-tl').innerHTML = s + '</svg>';
+}
+
+/* ---------- 03 ---------- */
+const ORIGIN_TEXT = {
+  propagated: '앞 편 지연이 넘어왔다', external: '해외에서 온 앞 편이 늦게 도착했다', new_origin: '이 편에서 새로 생긴 지연이다',
+  first_leg: '그날 첫 편에서 생긴 지연이다', unknown: '앞 편 정보가 없어 확인할 수 없다', not_delayed: '15분 넘게 늦지 않았다'
+};
+function renderWhy() {
+  const r = cur, d = r.dep_delay_gate_est_min;
+  $('why-h').textContent = `${r.flight_no} ${ko(r.dep_airport)} → ${ko(r.arr_airport)} · ${hm(r.dep_sched_at)} 예정`;
+  const carried = r.carried_delay_min, own = r.own_added_delay_min;
+  let detail = '';
+  if (['propagated', 'external'].includes(r.delay_origin_type) && carried != null)
+    detail = `<div class="stack" style="max-width:520px"><i style="width:${Math.max(0, carried) / Math.max(d, 1) * 100}%;background:var(--bad)" title="넘어온 지연"></i><i style="width:${Math.max(0, own) / Math.max(d, 1) * 100}%;background:var(--warn)" title="이 편에서 더해진 지연"></i></div>
+      <div class="leg"><span><i style="background:var(--bad)"></i>앞 편 ${r.prev_flight}에서 넘어옴 ${Math.round(carried)}분</span><span><i style="background:var(--warn)"></i>이 편에서 더해짐 ${Math.round(Math.max(0, own))}분</span></div>`;
+  $('why').innerHTML = `<div class="why"><div class="big ${delayClass(d)}">${d == null ? '–' : Math.round(d)}<small>분 지연</small></div>
+    <div><p class="answer" style="margin-top:0">${ORIGIN_TEXT[r.delay_origin_type] || ''}</p>
+    <p class="sub" style="margin:4px 0 10px">${r.prev_flight ? `앞 편 ${r.prev_flight}(${ko(r.prev_dep_airport)}발)은 ${hm(r.prev_arr_actual_at)}에 도착(예정 ${hm(r.prev_arr_sched_at)}), 예정 준비 시간은 ${r.sched_turnaround_min == null ? '–' : Math.round(r.sched_turnaround_min) + '분'}이었다.` : '앞 편 연결 정보가 없다.'}</p>${detail}</div></div>`;
+}
+function routeHist(r) { return H.routes.find(x => x.dep === ko(r.dep_airport) && x.arr === ko(r.arr_airport)); }
+function renderWait() {
+  const r = cur, h = routeHist(r), ad = H.route_arr_delay.find(x => x.dep === ko(r.dep_airport) && x.arr === ko(r.arr_airport));
+  const hr = h && H.route_hour.find(x => x.dep === h.dep && x.arr === h.arr && x.h === +r.dep_sched_at.slice(11, 13));
+  $('wait').innerHTML = `<p class="sub">변경된 출발 시각이 있으면 그 시각까지 남은 시간을, 없으면 과거 같은 노선·시간대 사례를 참고 범위로 보여 준다.</p>
+   <p class="answer">이 편 이륙 ${hm(r.dep_actual_at)} (예정보다 <b class="${r.dep_delay_gate_est_min > 15 ? 'bad' : 'ok'}">${r.dep_delay_gate_est_min == null ? '–' : Math.round(r.dep_delay_gate_est_min) + '분'}</b> 늦음, 게이트 기준)</p>
+   <p class="sub" style="margin-top:10px">${hr ? `과거 ${h.dep}→${h.arr} ${hr.h}시대 출발 편 평균 지연 <b>${f1(hr.avg_delay)}분</b>, 15분 넘게 늦은 비율 ${f1(pct(hr.late, hr.base))}% (${fN(hr.flights)}편).` : '과거 같은 노선 자료가 부족하다.'}
+   ${ad ? `<br>같은 노선 도착 지연은 보통(P50) ${Math.round(ad.p50)}분, 늦을 때(P90) ${Math.round(ad.p90)}분이다.` : ''}</p>`;
+}
+function renderAlt() {
+  const r = cur, t = toMin(r.dep_sched_at);
+  const rows = ROT[day].filter(x => x.dep_airport === r.dep_airport && x.arr_airport === r.arr_airport && x !== r && toMin(x.dep_sched_at) >= t - 30).sort((a, b) => a.dep_sched_at < b.dep_sched_at ? -1 : 1).slice(0, 6);
+  if (!rows.length) { $('alt').innerHTML = '<p class="sub">그날 같은 노선 다음 편이 없다.</p>'; return; }
+  $('alt').innerHTML = `<table class="alt"><thead><tr><th>편명</th><th>항공사</th><th>예정</th><th>이륙</th><th>지연</th></tr></thead><tbody>${rows.map(x => `<tr><td class="id">${x.flight_no}</td><td>${x.airline_name}</td><td>${hm(x.dep_sched_at)}</td><td>${hm(x.dep_actual_at)}</td><td class="${delayClass(x.dep_delay_gate_est_min)}">${x.dep_delay_gate_est_min == null ? '–' : Math.round(x.dep_delay_gate_est_min) + '분'}</td></tr>`).join('')}</tbody></table>`;
+}
+function renderChains() {
+  const by = {};
+  ROT[day].forEach(x => (by[x.reg_no] = by[x.reg_no] || []).push(x));
+  const chains = [];
+  Object.values(by).forEach(L => {
+    L.sort((a, b) => a.dep_sched_at < b.dep_sched_at ? -1 : 1);
+    let run = [];
+    L.forEach(x => { if (x.delay_origin_type === 'propagated' || x.delay_origin_type === 'external') { if (!run.length) { const p = L[L.indexOf(x) - 1]; if (p) run.push(p); } run.push(x); } else { if (run.length >= 3) chains.push(run); run = []; } });
+    if (run.length >= 3) chains.push(run);
+  });
+  chains.sort((a, b) => b.length - a.length);
+  const box = $('chains'); box.innerHTML = chains.length ? '' : '<p class="sub">없음</p>';
+  chains.slice(0, 6).forEach(c => {
+    const f = el('div', 'flow'); f.style.marginBottom = '12px'; f.style.cursor = 'pointer';
+    f.innerHTML = c.map((x, i) => `${i ? `<div class="arr">+${Math.round(x.carried_delay_min || 0)}분 →</div>` : ''}<div class="leg2"><b>${x.flight_no}</b><span>${x.dep_airport}→${x.arr_airport} ${hm(x.dep_sched_at)}</span><span class="${delayClass(x.dep_delay_gate_est_min)}">${x.dep_delay_gate_est_min == null ? '' : Math.round(x.dep_delay_gate_est_min) + '분 지연'}</span></div>`).join('');
+    f.onclick = () => { pick(c[c.length - 1]); go('leave'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    box.append(el('p', 'note', `${c[0].reg_no} · ${c[0].airline_name} · ${c.length}편`), f);
+  });
+}
+
+/* ---------- 04 ---------- */
+function renderArrive() {
+  const r = cur, ad = H.route_arr_delay.find(x => x.dep === ko(r.dep_airport) && x.arr === ko(r.arr_airport));
+  $('arr-h').textContent = `${r.flight_no} ${ko(r.arr_airport)} 도착`;
+  const late = r.arr_actual_at && r.arr_sched_at ? toMin(r.arr_actual_at) - toMin(r.arr_sched_at) : null;
+  $('arr').innerHTML = `<div class="why"><div class="big">${hm(r.arr_actual_at || r.arr_sched_at)}</div><div><p class="answer" style="margin-top:0">${r.arr_actual_at ? '착륙' : '도착 예정'} · 예정 ${hm(r.arr_sched_at)}</p>
+    <p class="sub" style="margin:4px 0 0">${late == null ? '' : late > 0 ? `예정보다 ${late}분 늦게 착륙했다.` : '예정보다 일찍 착륙했다.'} 게이트 도착은 착륙 후 약 5분.</p></div></div>
+    ${ad ? `<p class="sub" style="margin-top:14px">예약 단계 참고: 같은 노선 과거 도착 지연 P50 ${Math.round(ad.p50)}분 · P90 ${Math.round(ad.p90)}분</p>` : ''}`;
+  renderMargin();
+}
+['meet', 'out', 'move'].forEach(id => $(id).addEventListener('input', renderMargin));
+function renderMargin() {
+  if (!cur) return;
+  const r = cur, ad = H.route_arr_delay.find(x => x.dep === ko(r.dep_airport) && x.arr === ko(r.arr_airport));
+  const [mh, mm] = $('meet').value.split(':').map(Number), meet = mh * 60 + mm, extra = (+$('out').value || 0) + (+$('move').value || 0) + 5;
+  const now = toMin(r.arr_actual_at || r.arr_sched_at), sched = toMin(r.arr_sched_at);
+  const m1 = meet - (now + extra);
+  const m90 = ad ? meet - (sched + Math.max(0, ad.p90) + extra) : null;
+  const fmt = (m) => m >= 0 ? `<b class="ok">${m}분 남음</b>` : `<b class="bad">${-m}분 늦음</b>`;
+  $('margin').innerHTML = `<p class="answer">당일(최신 도착 시각 기준): ${fmt(m1)}</p>${m90 != null ? `<p class="answer" style="font-size:1.1rem">예약 단계(과거 P90만큼 늦는다고 보면): ${fmt(m90)}</p>` : ''}
+    <p class="note">계산: 착륙 + 게이트 5분 + 공항에서 나오는 시간 + 이동 시간.</p>`;
+}
+
+fillList(); renderBook(); drawJeju(); renderChains(); pick(defaultFlight());
+$('day').addEventListener('change', renderChains);
+})();
+</script>
+</body>
+</html>
