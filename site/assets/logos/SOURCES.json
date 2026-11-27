@@ -48,5 +48,15 @@
   "file": "SUM Air Logo.svg",
   "license": "Public domain",
   "source": "https://commons.wikimedia.org/wiki/File:SUM_Air_Logo.svg"
+ },
+ "LJ": {
+  "file": "Jin Air logo.svg",
+  "license": "Fair use (영문 위키백과 비자유 파일)",
+  "source": "https://en.wikipedia.org/wiki/File:Jin_Air_logo.svg"
+ },
+ "4H": {
+  "file": null,
+  "license": null,
+  "source": "하이에어는 2023-08-31 운항 중단, 공식 사이트(hi-airlines.com) 접속 안 됨 → 코드 배지"
  }
 }
