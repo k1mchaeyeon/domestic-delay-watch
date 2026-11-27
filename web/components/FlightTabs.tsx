@@ -1,11 +1,13 @@
 "use client";
 
 // 출발 전 · 공항에서 · 도착: 같은 "내 비행기"(편명+비행일)를 보고 각 단계 질문에 답한다 (HTML 1차안과 같은 계산·문구)
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Airports, History, Leg, Satellite } from "@/lib/types";
 import { clock, dayLabel, delayTone, delayWord, dur, hm, mins, shift } from "@/lib/words";
 import { Airline, Answer, Badge, Card, KpiTile, Table, type Col } from "@/components/ui";
 import { SatMap } from "@/components/SatMap";
+import { CascadeGraph } from "@/components/CascadeGraph";
+import { cascadeOrigin, computeCascade, MTT_MIN } from "@/lib/cascade";
 
 type Ctx = { h: History; AP: Airports; ROT: Record<string, Leg[]>; DAYS: string[]; day: string; cur: Leg; goDay: (d: string, fno?: string) => void; SAT: Satellite | null };
 const koOf = (AP: Airports) => (c: string | null) => (c ? AP[c]?.ko ?? c : "");
@@ -63,7 +65,39 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
           { key: "s", label: "출발", align: "right", render: (l) => <Badge tone={delayTone(l.dep_delay_gate_est_min)}>{delayWord(l.dep_delay_gate_est_min)}</Badge> },
         ]} rows={legs} rowKey={(l) => l.flight_no + l.dep_sched_at} selected={(l) => l === r} />
       </Card>
+
+      <Domino legs={legs} r={r} ko={ko} />
     </div>
+  );
+}
+
+// 지연 도미노 + 가정(what-if): "만약 이 편이 N분 더 늦으면 내 비행기는?"
+function Domino({ legs, r, ko }: { legs: Leg[]; r: Leg; ko: (c: string | null) => string }) {
+  const before = legs.slice(0, legs.indexOf(r) + 1);
+  const [pick, setPick] = useState(""), [extra, setExtra] = useState(0);
+  const what = before.some((l) => l.flight_no === pick) ? pick : before[0]?.flight_no ?? "";
+  useEffect(() => { setPick(""); setExtra(0); }, [r]);
+  const base = useMemo(() => computeCascade(legs), [legs]);
+  const chain = useMemo(() => computeCascade(legs, extra && what ? { [what]: extra } : {}), [legs, what, extra]);
+  const mine = chain.find((c) => c.leg === r), mineBase = base.find((c) => c.leg === r);
+  const moved = mine && mineBase ? Math.round(mine.depDelayMin - mineBase.depDelayMin) : 0;
+  const hops = chain.filter((c) => c.carriedMin > 0).length;
+  const field = "num h-8 rounded-[6px] border border-line-strong bg-surface px-2 text-[13px] text-ink";
+
+  return (
+    <Card title="지연 도미노" right={<span>준비 시간이 {MTT_MIN}분보다 짧으면 앞 편 지연이 넘어와요 · 오늘 {hops}번 넘어옴</span>}>
+      <div className="mb-3 flex flex-wrap items-center gap-2 text-[13px] text-ink-2">
+        <span>만약</span>
+        <select aria-label="가정할 편" value={what} onChange={(e) => setPick(e.target.value)} className={field}>
+          {before.map((l) => <option key={l.flight_no + l.dep_sched_at} value={l.flight_no}>{l.flight_no} ({hm(l.dep_sched_at)})</option>)}
+        </select>
+        <span>편이</span>
+        <input type="range" min={0} max={90} step={5} value={extra} onChange={(e) => setExtra(+e.target.value)} aria-label="더 늦어지는 시간(분)" className="w-32 accent-[var(--accent)]" />
+        <span className="num w-24 text-ink">{extra}분 더 늦으면</span>
+        {extra > 0 && <span className="font-medium text-ink">→ 내 비행기 {moved > 0 ? <span className="text-bad">{dur(moved)} 더 늦어요</span> : <span className="text-ok">그대로예요</span>}</span>}
+      </div>
+      <CascadeGraph chain={chain} myFlight={r.flight_no} ko={ko} />
+    </Card>
   );
 }
 
@@ -74,7 +108,9 @@ export function AirportTab({ h, AP, ROT, day, cur }: Ctx) {
   if (d == null || d <= 15) ans = <span className="text-ok">늦지 않았어요</span>;
   else if (["propagated", "external"].includes(t) && (r.carried_delay_min ?? 0) > 0) {
     ans = <>앞 비행기가 <span className="text-bad">{dur(r.prev_arr_delay_min ?? 0)}</span> 늦게 도착해서 늦어요</>;
-    why = <>{r.prev_flight}편({ko(r.prev_dep_airport)} → {ko(r.dep_airport)})이 예정보다 늦은 {hm(r.prev_arr_actual_at)}에 들어왔어요. 이 편 출발 예정은 {hm(r.dep_sched_at)}이었어요.</>;
+    const o = cascadeOrigin(computeCascade(legsOf(ROT[day], r)), r.flight_no);
+    why = <>{r.prev_flight}편({ko(r.prev_dep_airport)} → {ko(r.dep_airport)})이 예정보다 늦은 {hm(r.prev_arr_actual_at)}에 들어왔어요. 이 편 출발 예정은 {hm(r.dep_sched_at)}이었어요.
+      {o && o.hops > 1 && <> 지연은 {hm(o.origin.leg.dep_sched_at)} {o.origin.leg.flight_no}편({ko(o.origin.leg.dep_airport)} → {ko(o.origin.leg.arr_airport)})이 늦게 도착한 데서 시작해 {o.hops}편째 이어졌어요.</>}</>;
   } else if (t === "first_leg") ans = <>오늘 첫 비행이라 앞 비행기 탓은 아니에요</>;
   else if (t === "unknown") ans = "앞 비행기 기록이 없어서 이유를 모르겠어요";
   else { ans = <>앞 비행기는 제때 왔어요</>; why = <>그런데도 {dur(d)} 늦게 떴어요.</>; }
