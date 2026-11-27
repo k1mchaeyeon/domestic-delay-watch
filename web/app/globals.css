@@ -1,17 +1,40 @@
 @import "tailwindcss";
 
-/* 기존 HTML 1차안과 같은 색 토큰. 상태색(제때·조금·많이)만 의미를 가진다 */
+/*
+  디자인 토큰 (A안: B2B 모양 + 승객 질문)
+  - 회색 한 계열 + 강조 파랑(선택·주 버튼에만) + 상태색 3단계(제때/지연/심한 지연)
+  - 4px 격자, 라운드 6(입력)/8(카드), 그림자 없이 1px 테두리
+*/
 :root {
-  --bg: #f4f6fa; --card: #ffffff; --ink: #0b1220; --sub: #5b6678; --line: #e4e8ef; --soft: #eef1f6;
-  --blue: #2563eb; --ok: #16a34a; --mid: #d97706; --bad: #dc2626; --dot: #d6dbe4; --map: #0b1220; --map-sub: #8390a8;
+  --bg: #fafafa; --surface: #ffffff; --subtle: #f4f4f5; --line: rgba(9, 9, 11, 0.08); --line-strong: rgba(9, 9, 11, 0.14);
+  --ink: #0b0b0f; --ink-2: #52525b; --ink-3: #a1a1aa;
+  --accent: #2563eb; --accent-ink: #ffffff; --accent-soft: rgba(37, 99, 235, 0.08);
+  --ok: #15803d; --warn: #b45309; --bad: #b91c1c;
+  --chart: #d4d4d8; --chart-strong: #71717a;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0b1220; --card: #121a2b; --ink: #eef1f6; --sub: #9aa5b8; --line: #222c40; --soft: #1a2335;
-    --blue: #6b93ff; --ok: #4ade80; --mid: #fbbf24; --bad: #f87171; --dot: #2a3550; --map: #070b14; }
+  :root {
+    --bg: #09090b; --surface: #111113; --subtle: #18181b; --line: rgba(255, 255, 255, 0.08); --line-strong: rgba(255, 255, 255, 0.14);
+    --ink: #fafafa; --ink-2: #a1a1aa; --ink-3: #71717a;
+    --accent: #3b82f6; --accent-soft: rgba(59, 130, 246, 0.14);
+    --ok: #22c55e; --warn: #f59e0b; --bad: #ef4444;
+    --chart: #3f3f46; --chart-strong: #a1a1aa;
+    color-scheme: dark;
+  }
 }
 @theme inline {
-  --color-bg: var(--bg); --color-card: var(--card); --color-ink: var(--ink); --color-sub: var(--sub); --color-line: var(--line);
-  --color-soft: var(--soft); --color-blue: var(--blue); --color-ok: var(--ok); --color-mid: var(--mid); --color-bad: var(--bad);
-  --color-dot: var(--dot); --color-map: var(--map); --color-map-sub: var(--map-sub);
+  --color-bg: var(--bg); --color-surface: var(--surface); --color-subtle: var(--subtle);
+  --color-line: var(--line); --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink); --color-ink-2: var(--ink-2); --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent); --color-accent-ink: var(--accent-ink); --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok); --color-warn: var(--warn); --color-bad: var(--bad);
+  --color-chart: var(--chart); --color-chart-strong: var(--chart-strong);
+  --font-sans: "Pretendard", "Pretendard Variable", -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --radius-ctl: 6px; --radius-card: 8px;
 }
-body { background: var(--bg); color: var(--ink); word-break: keep-all; }
+html { -webkit-font-smoothing: antialiased; accent-color: var(--accent); }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; word-break: keep-all; }
+::selection { background: var(--accent-soft); }
+.num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
