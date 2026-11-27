@@ -10,14 +10,5 @@ async function loadHistory(): Promise<History> {
 }
 
 export default async function Home() {
-  const h = await loadHistory();
-  return (
-    <main className="mx-auto flex max-w-[920px] flex-col gap-4 px-4 pb-16 pt-5">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-bold">국내선 지연 워치</h1>
-        <p className="text-xs text-sub">항공정보포털 국내선 기록 {h.period.from.slice(0, 4)}~{h.period.to.slice(0, 4)}년</p>
-      </header>
-      <Tabs h={h} />
-    </main>
-  );
+  return <Tabs h={await loadHistory()} />;
 }
