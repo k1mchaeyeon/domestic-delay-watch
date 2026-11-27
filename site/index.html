@@ -171,6 +171,8 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 .alt .who { font-size: 16px; font-weight: 600; } .alt .who small { display: block; font-weight: 400; color: var(--sub); font-size: 13px; }
 .alt .tag { font-size: 14px; padding: 4px 12px; }
 .gauge { margin: 14px 0 4px; }
+.logo { display: inline-grid; place-items: center; width: 64px; height: 30px; padding: 4px 6px; border-radius: 8px; background: #fff; border: 1px solid var(--line); margin-right: 8px; vertical-align: middle; flex: none; }
+.logo img { max-width: 100%; max-height: 100%; display: block; }
 .code { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--bg); font-family: var(--mono); font-size: 11.5px; font-weight: 700; margin-right: 8px; vertical-align: middle; flex: none; }
 .gauge .bar { position: relative; height: 12px; border-radius: 6px; background: var(--soft); }
 .gauge .bar b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; background: var(--dot); }
@@ -299,13 +301,16 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
       <p class="why">지금 날씨로 본 결항 가능성, 실시간 운항 정보, 물어보면 답하는 챗봇</p>
     </div>
   </section>
+  <footer class="small" style="margin-top:8px">항공사 로고는 각 사의 상표예요. 개인 학습용으로 위키미디어 커먼즈 파일을 썼어요.</footer>
+  <section hidden>
+  </section>
 </div>
 
 <script>
 (async () => {
 const $ = (id) => document.getElementById(id);
 const load = (name) => (window.__DATA__ && window.__DATA__[name]) ? Promise.resolve(window.__DATA__[name]) : fetch(`data/${name}.json`).then(r => r.json());
-const [H, AP] = await Promise.all([load('history'), load('airports')]);
+const [H, AP, LOGO] = await Promise.all([load('history'), load('airports'), load('logos').catch(() => ({}))]);
 const DAYS = await load('days');
 const ROT = {};
 await Promise.all(DAYS.map(async d => { ROT[d] = await load(`rotation_${d}`); }));
@@ -348,7 +353,7 @@ const CAUSE = { '항공기 연결': '앞 비행기가 늦게 와서', '항공교
   '항공기 정비': '비행기 점검 때문에', '여객·화물처리': '승객·짐 처리가 늦어서', '운항·승무원': '승무원 사정으로', '지상조업': '지상 작업이 늦어서', '기타': '그 밖의 이유로' };
 const AIR_CODE = { '대한항공': 'KE', '아시아나항공': 'OZ', '제주항공': '7C', '진에어': 'LJ', '트리니티항공': 'TW', '티웨이항공': 'TW', '에어부산': 'BX', '에어서울': 'RS',
   '이스타항공': 'ZE', '에어로케이항공': 'RF', '에어로케이': 'RF', '파라타항공': 'WE', '하이에어': '4H', '섬에어': 'XU' };
-const badge = (name) => `<span class="code">${AIR_CODE[name] || name.slice(0, 2)}</span>`;
+const badge = (name) => { const c = AIR_CODE[name]; return c && LOGO[c] ? `<span class="logo"><img src="${LOGO[c]}" alt=""></span>` : `<span class="code">${c || name.slice(0, 2)}</span>`; };
 
 function drawHours(hours, best, worst) {
   const W = 640, H0 = 200, pb = 26, pt = 24, n = hours.length, bw = (W - 8) / n;
