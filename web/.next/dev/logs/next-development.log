@@ -1,0 +1,10 @@
+{"timestamp":"00:00:00.603","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:01:02.354","source":"Server","level":"ERROR","message":"⨯ \"unhandledRejection:\" Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}
+{"timestamp":"00:01:02.360","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}
+{"timestamp":"00:01:03.091","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}
+{"timestamp":"00:01:03.112","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}
+{"timestamp":"00:01:03.114","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}
+{"timestamp":"00:01:03.190","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}
+{"timestamp":"00:01:03.208","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}
+{"timestamp":"00:01:03.230","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}
+{"timestamp":"00:01:04.389","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/kcy/Desktop/최종프로젝트_항공지연/domestic-delay-watch/web/app'"}

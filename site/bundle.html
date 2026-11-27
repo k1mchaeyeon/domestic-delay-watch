@@ -40,7 +40,9 @@ header p { margin: 0; font-size: 12.5px; color: var(--sub); }
 .view { display: flex; flex-direction: column; gap: 16px; }
 .view[hidden] { display: none; }
 
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px; min-width: 0; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px 24px; min-width: 0; }
+::selection { background: color-mix(in srgb, var(--blue) 24%, transparent); }
+html { accent-color: var(--blue); scrollbar-color: var(--dot) transparent; }
 .ask { font-size: 14px; color: var(--sub); margin: 0 0 6px; font-weight: 600; }
 .answer { font-family: var(--display); font-size: clamp(1.5rem, 4.6vw, 2.1rem); line-height: 1.3; margin: 0 0 8px; text-wrap: balance; }
 .answer em { font-style: normal; color: var(--blue); }
@@ -67,7 +69,7 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 
 /* 10개 점: 10번 중 몇 번 */
 .rows { display: flex; flex-direction: column; }
-.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
 .row:first-child { border-top: 0; padding-top: 0; }
 .row .nm { font-weight: 600; } .row .nm small { font-weight: 400; color: var(--sub); margin-left: 6px; }
 .row .say { font-size: 13.5px; color: var(--sub); grid-column: 1 / -1; }
@@ -92,7 +94,7 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
 .facts div { background: var(--soft); border-radius: 12px; padding: 10px 12px; }
 .facts span { display: block; font-size: 12px; color: var(--sub); }
-.facts b { font-family: var(--display); font-size: 1.15rem; }
+.facts b { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 .mapcard { border-radius: 20px; overflow: hidden; background: var(--map); color: var(--map-ink); }
 .mapcard .head { padding: 14px 18px 0; font-size: 15px; }
@@ -103,7 +105,7 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 .mapcard .slider input { flex: 1; accent-color: var(--amber); }
 
 .plan { list-style: none; margin: 0; padding: 0; }
-.plan li { display: grid; grid-template-columns: 3.4em minmax(0, 1fr) auto; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); align-items: center; }
+.plan li { display: grid; grid-template-columns: 3.4em minmax(0, 1fr) auto; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); align-items: center; }
 .plan li:first-child { border-top: 0; }
 .plan li.me { font-weight: 700; }
 .plan .t { font-family: var(--mono); font-size: 13.5px; }
@@ -128,13 +130,19 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 .hourchart text.v { font-weight: 700; font-size: 13px; }
 
 /* TOP 3 */
-.top3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
-.top3 .it { background: var(--soft); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
-.top3 .rk { font-size: 12.5px; color: var(--sub); font-weight: 600; }
-.top3 .nm { font-family: var(--display); font-size: 1.3rem; line-height: 1.2; }
-.top3 .nm small { font-family: var(--sans); font-size: 13px; color: var(--sub); margin-left: 6px; }
-.top3 .big { font-family: var(--display); font-size: 1.6rem; color: var(--bad); line-height: 1.1; }
-.top3 .big small { font-family: var(--sans); font-size: 13px; color: var(--sub); margin-left: 4px; }
+.top3 { display: flex; flex-direction: column; }
+.top3 .it { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 12px; row-gap: 8px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.top3 .it:first-child { border-top: 0; padding-top: 4px; }
+.top3 .rk { font-size: 13px; color: var(--sub); font-weight: 600; font-variant-numeric: tabular-nums; }
+.top3 .nm { font-size: 16px; font-weight: 600; display: flex; align-items: center; min-width: 0; }
+.top3 .nm small { font-size: 13px; font-weight: 400; color: var(--sub); margin-left: 8px; }
+.top3 .big { font-size: 15px; font-weight: 600; color: var(--bad); font-variant-numeric: tabular-nums; text-align: right; }
+.top3 .big small { font-size: 13px; font-weight: 400; color: var(--sub); margin-left: 4px; }
+.top3 .meter { grid-column: 2 / -1; height: 4px; border-radius: 2px; background: var(--soft); overflow: hidden; }
+.top3 .meter i { display: block; height: 100%; background: var(--dot); }
+.top3 .it:first-child .nm { font-size: 19px; }
+.top3 .it:first-child .big { font-size: 18px; }
+.top3 .it:first-child .meter i { background: var(--bad); }
 .rank { margin: 0; padding: 0; list-style: none; counter-reset: r; }
 .rank li { counter-increment: r; display: grid; grid-template-columns: 2em minmax(0, 1fr) auto; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); align-items: center; }
 .rank li:first-child { border-top: 0; }
@@ -147,7 +155,7 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 .cmp { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
 .cmp div { background: var(--soft); border-radius: 14px; padding: 12px 14px; }
 .cmp span { display: block; font-size: 12.5px; color: var(--sub); }
-.cmp b { font-family: var(--display); font-size: 1.25rem; }
+.cmp b { font-size: 18px; font-weight: 600; }
 .cal { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; margin-top: 14px; }
 .cal button { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 8px 4px; cursor: pointer; text-align: center; font-size: 12px; color: var(--sub); }
 .cal button b { display: block; font-size: 13.5px; color: var(--ink); }
@@ -160,13 +168,14 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 /* 다음 비행기 */
 .alt { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .alt li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; background: var(--soft); border-radius: 16px; padding: 14px 18px; }
-.alt .t { font-family: var(--display); font-size: 1.6rem; }
+.alt .t { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .alt .who { font-size: 16px; font-weight: 600; } .alt .who small { display: block; font-weight: 400; color: var(--sub); font-size: 13px; }
 .alt .tag { font-size: 14px; padding: 4px 12px; }
 .gauge { margin: 14px 0 4px; }
 .code { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--bg); font-family: var(--mono); font-size: 11.5px; font-weight: 700; margin-right: 8px; vertical-align: middle; flex: none; }
-.gauge .bar { position: relative; height: 14px; border-radius: 7px; background: linear-gradient(90deg, var(--ok), var(--mid) 50%, var(--bad)); opacity: .85; }
-.gauge .bar i { position: absolute; top: -6px; width: 4px; height: 26px; border-radius: 2px; background: var(--ink); }
+.gauge .bar { position: relative; height: 12px; border-radius: 6px; background: var(--soft); }
+.gauge .bar b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; background: var(--dot); }
+.gauge .bar i { position: absolute; top: -6px; width: 4px; height: 24px; border-radius: 2px; background: var(--bad); }
 .gauge .lab { display: flex; justify-content: space-between; font-size: 12px; color: var(--sub); margin-top: 6px; }
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -369,7 +378,7 @@ function renderBook() {
   $('b-why').innerHTML = `${hourName(best.h)} 비행기는 <b>${late10(tenOf(best.late, best.base))}</b>. ${hourName(worst.h)}는 ${late10(tenOf(worst.late, worst.base))}.`;
   $('b-hours').innerHTML = drawHours(hours, best, worst) + `<p class="small" style="color:var(--map-sub);margin:6px 2px 0">막대가 높을수록 15분 넘게 늦게 뜬 비행기가 많아요. 초록은 제일 덜 늦는 시간, 빨강은 제일 많이 늦는 시간이에요.</p>`;
 
-  const card = (rk, name, sub, n, extra) => `<div class="it"><span class="rk">${rk}위</span><span class="nm">${name}${sub ? `<small>${sub}</small>` : ''}</span><span class="big">10번 중 ${n}번<small>늦어요</small></span>${dots(n)}${extra || ''}</div>`;
+  const card = (rk, name, sub, n) => `<div class="it"><span class="rk">${rk}</span><span class="nm">${name}${sub ? `<small>${sub}</small>` : ''}</span><span class="big">10번 중 ${n}번<small>늦어요</small></span><span class="meter" aria-hidden="true"><i style="width:${n * 10}%"></i></span></div>`;
   $('air-h').textContent = `${r.dep} → ${r.arr}에서 제일 많이 늦는 항공사`;
   const al = H.route_airline.filter(same).sort((a, b) => rate(b) - rate(a)).slice(0, 3);
   $('b-air').innerHTML = al.map((a, i) => card(i + 1, `${badge(a.airline)}${a.airline}`, '', tenOf(a.late, a.base))).join('') || '<p class="why">기록이 부족해요.</p>';
@@ -498,7 +507,7 @@ function renderAirport() {
     const p50 = Math.max(0, Math.round(h.p50)), p90 = Math.max(0, Math.round(h.p90)), mark = d == null ? null : Math.max(0, Math.min(d, 90));
     $('w-ans').innerHTML = d > 15 ? `지금 <em class="${delayTag(d)}">${dur(d)}</em> 늦었어요. 보통은 <em>${p90}분</em>을 넘기지 않아요` : `늦어져도 보통 <em>${p90}분</em> 안에는 떠요`;
     $('w-why').innerHTML = `이 시간대 ${ko(r.dep_airport)} → ${ko(r.arr_airport)} 비행기 10대 중 9대가 ${p90}분 안에, 절반은 ${p50}분 안에 떠났어요. 출발 시각이 바뀌었다고 안내되면 그 시각을 먼저 보세요.
-      <div class="gauge"><div class="bar">${mark != null ? `<i style="left:calc(${mark / 90 * 100}% - 2px)" title="이 비행기"></i>` : ''}<span style="position:absolute;left:${p90 / 90 * 100}%;top:-2px;width:2px;height:18px;background:var(--card)"></span></div>
+      <div class="gauge"><div class="bar"><b style="width:${Math.min(100, p90 / 90 * 100)}%" title="10대 중 9대가 이 안에 떠났어요"></b>${mark != null ? `<i style="left:calc(${mark / 90 * 100}% - 2px)" title="이 비행기"></i>` : ''}</div>
       <div class="lab"><span>제때</span><span>${p90}분 (10대 중 9대)</span><span>90분+</span></div></div>`;
   } else { $('w-ans').textContent = '이 노선은 지난 기록이 부족해요'; $('w-why').textContent = ''; }
 
