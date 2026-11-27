@@ -113,6 +113,60 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 .calc label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--sub); }
 .calc input { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 9px 12px; color: var(--ink); }
 .soon { border-style: dashed; background: transparent; }
+
+/* 노선 고르기: 예매 화면처럼 출발 → 도착 */
+.route { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: end; padding: 16px 20px; }
+.route label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--sub); font-weight: 600; }
+.route select { appearance: none; border: 1px solid var(--line); background: var(--soft); border-radius: 14px; padding: 12px 14px; font-family: var(--display); font-size: 1.3rem; color: var(--ink); cursor: pointer; }
+.route .arrow { font-size: 1.4rem; color: var(--sub); padding-bottom: 12px; }
+
+/* 시간대 막대그래프 */
+.hourchart { margin-top: 16px; background: var(--map); border-radius: 16px; padding: 16px 14px 10px; }
+.hourchart svg { display: block; width: 100%; height: auto; }
+.hourchart text { font-family: var(--sans); font-size: 12px; fill: var(--map-sub); }
+.hourchart text.v { font-weight: 700; font-size: 13px; }
+
+/* TOP 3 */
+.top3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.top3 .it { background: var(--soft); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.top3 .rk { font-size: 12.5px; color: var(--sub); font-weight: 600; }
+.top3 .nm { font-family: var(--display); font-size: 1.3rem; line-height: 1.2; }
+.top3 .nm small { font-family: var(--sans); font-size: 13px; color: var(--sub); margin-left: 6px; }
+.top3 .big { font-family: var(--display); font-size: 1.6rem; color: var(--bad); line-height: 1.1; }
+.top3 .big small { font-family: var(--sans); font-size: 13px; color: var(--sub); margin-left: 4px; }
+.rank { margin: 0; padding: 0; list-style: none; counter-reset: r; }
+.rank li { counter-increment: r; display: grid; grid-template-columns: 2em minmax(0, 1fr) auto; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); align-items: center; }
+.rank li:first-child { border-top: 0; }
+.rank li::before { content: counter(r); font-family: var(--display); color: var(--sub); }
+.rank li.me { font-weight: 700; }
+
+/* 비행일 고르기 + 다른 날 비교 */
+.dpick { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--sub); }
+.dpick input { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 9px 12px; color: var(--ink); }
+.cmp { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.cmp div { background: var(--soft); border-radius: 14px; padding: 12px 14px; }
+.cmp span { display: block; font-size: 12.5px; color: var(--sub); }
+.cmp b { font-family: var(--display); font-size: 1.25rem; }
+.cal { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; margin-top: 14px; }
+.cal button { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 8px 4px; cursor: pointer; text-align: center; font-size: 12px; color: var(--sub); }
+.cal button b { display: block; font-size: 13.5px; color: var(--ink); }
+.cal button.ok { background: color-mix(in srgb, var(--ok) 14%, var(--card)); }
+.cal button.mid { background: color-mix(in srgb, var(--mid) 18%, var(--card)); }
+.cal button.bad { background: color-mix(in srgb, var(--bad) 18%, var(--card)); }
+.cal button[aria-pressed="true"] { outline: 2px solid var(--blue); }
+.cal button:disabled { opacity: .4; cursor: default; }
+
+/* 다음 비행기 */
+.alt { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.alt li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; background: var(--soft); border-radius: 16px; padding: 14px 18px; }
+.alt .t { font-family: var(--display); font-size: 1.6rem; }
+.alt .who { font-size: 16px; font-weight: 600; } .alt .who small { display: block; font-weight: 400; color: var(--sub); font-size: 13px; }
+.alt .tag { font-size: 14px; padding: 4px 12px; }
+.gauge { margin: 14px 0 4px; }
+.code { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--bg); font-family: var(--mono); font-size: 11.5px; font-weight: 700; margin-right: 8px; vertical-align: middle; flex: none; }
+.gauge .bar { position: relative; height: 14px; border-radius: 7px; background: linear-gradient(90deg, var(--ok), var(--mid) 50%, var(--bad)); opacity: .85; }
+.gauge .bar i { position: absolute; top: -6px; width: 4px; height: 26px; border-radius: 2px; background: var(--ink); }
+.gauge .lab { display: flex; justify-content: space-between; font-size: 12px; color: var(--sub); margin-top: 6px; }
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -132,35 +186,38 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 
   <!-- 예약할 때 -->
   <section class="view" id="v-book">
-    <div class="pick" id="routes" aria-label="노선 고르기"></div>
+    <div class="card route">
+      <label>출발<select id="r-dep" aria-label="출발 공항"></select></label>
+      <span class="arrow" aria-hidden="true">→</span>
+      <label>도착<select id="r-arr" aria-label="도착 공항"></select></label>
+    </div>
     <div class="card">
       <p class="ask" id="b-ask"></p>
       <p class="answer" id="b-ans"></p>
       <p class="why" id="b-why"></p>
-      <div class="hours" id="b-hours"></div>
-      <p class="small">칸 안 숫자는 10번 탔을 때 15분 넘게 늦게 뜬 횟수예요.</p>
-    </div>
-    <div class="grid2">
-      <div class="card">
-        <h2>항공사별로 보면</h2>
-        <div class="rows" id="b-air"></div>
-      </div>
-      <div class="card">
-        <h2>자주 늦는 비행기</h2>
-        <div class="rows" id="b-fl"></div>
-        <p class="small">2025년부터 100번 넘게 뜬 비행기만 봤어요.</p>
-      </div>
+      <div class="hourchart" id="b-hours"></div>
     </div>
     <div class="card">
-      <h2>늦는 이유는 보통</h2>
+      <h2 id="air-h">제일 많이 늦는 항공사</h2>
+      <div class="top3" id="b-air"></div>
+    </div>
+    <div class="card">
+      <h2 id="fl-h">제일 자주 늦는 비행기</h2>
+      <div class="top3" id="b-fl"></div>
+      <p class="small">2025년부터 100번 넘게 뜬 비행기 중에서 골랐어요.</p>
+    </div>
+    <div class="card">
+      <h2 id="cause-h">늦는 이유</h2>
       <p class="answer" id="b-cause" style="font-size:1.35rem"></p>
       <div class="rows" id="b-causes"></div>
+      <h2 style="margin-top:22px">전체 국내선에서 늦는 이유 순위</h2>
+      <ol class="rank" id="b-rank"></ol>
+      <p class="small">2025년부터 늦게 뜬 국내선 비행기의 공식 지연 사유를 셌어요.</p>
     </div>
-    <div class="card">
-      <p class="ask">제주 가는 비행기, 언제 결항이 많아요?</p>
+    <div class="card" id="j-card">
+      <p class="ask" id="j-ask"></p>
       <p class="answer" id="j-ans"></p>
       <p class="why" id="j-why"></p>
-      <div class="pick" id="j-pick" style="margin-top:12px"></div>
       <div class="months" id="j-months"></div>
     </div>
   </section>
@@ -172,11 +229,17 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
       <div class="find">
         <input id="fno" list="fnos" placeholder="편명 (예: KE1626)" aria-label="편명" autocomplete="off">
         <datalist id="fnos"></datalist>
-        <div class="pick" id="days"></div>
+        <label class="dpick">비행일<input type="date" id="day" aria-label="비행일"></label>
       </div>
       <p class="answer" id="l-ans" style="margin-top:12px"></p>
       <p class="why" id="l-why"></p>
       <div class="pass" id="pass"></div>
+    </div>
+    <div class="card">
+      <h2 id="hist-h">같은 비행기, 다른 날은 어땠어요?</h2>
+      <div class="cmp" id="cmp"></div>
+      <div class="cal" id="cal"></div>
+      <p class="small">칸을 누르면 그날 기록으로 바뀌어요.</p>
     </div>
     <div class="mapcard" id="map"></div>
     <div class="card">
@@ -194,12 +257,13 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
     </div>
     <div class="card">
       <p class="ask">얼마나 기다려야 해요?</p>
-      <p class="answer" id="w-ans" style="font-size:1.4rem"></p>
-      <p class="why" id="w-why"></p>
+      <p class="answer" id="w-ans"></p>
+      <div class="why" id="w-why"></div>
     </div>
     <div class="card">
-      <h2>같은 곳 가는 다음 비행기</h2>
-      <ul class="plan" id="alt"></ul>
+      <p class="ask">다른 비행기로 바꿀 수 있을까요?</p>
+      <h2 class="answer" style="font-size:1.5rem">같은 곳 가는 다음 비행기</h2>
+      <ul class="alt" id="alt"></ul>
       <p class="small">바꿔 탈 수 있는지는 항공사에 남은 자리와 변경 조건을 물어봐야 해요.</p>
     </div>
   </section>
@@ -233,7 +297,7 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 const $ = (id) => document.getElementById(id);
 const load = (name) => (window.__DATA__ && window.__DATA__[name]) ? Promise.resolve(window.__DATA__[name]) : fetch(`data/${name}.json`).then(r => r.json());
 const [H, AP] = await Promise.all([load('history'), load('airports')]);
-const DAYS = ['20261123', '20261124', '20261125'];
+const DAYS = await load('days');
 const ROT = {};
 await Promise.all(DAYS.map(async d => { ROT[d] = await load(`rotation_${d}`); }));
 
@@ -250,7 +314,7 @@ const late10 = (n) => n <= 0 ? '거의 안 늦어요' : `10번 중 ${n}번 늦�
 const delayWord = (m) => m == null ? '' : m <= 15 ? '제때' : `${dur(m)} 늦음`;
 const delayTag = (m) => m == null ? '' : m <= 15 ? 'ok' : m <= 45 ? 'mid' : 'bad';
 
-$('src').textContent = `항공정보포털 국내선 기록 ${H.period.from.slice(0, 4)}~${H.period.to.slice(0, 4)}년 · 11월 23~25일 수집 기록`;
+$('src').textContent = `항공정보포털 국내선 기록 ${H.period.from.slice(0, 4)}~${H.period.to.slice(0, 4)}년 · 11월 ${+DAYS[0].slice(6)}~${+DAYS[DAYS.length - 1].slice(6)}일 수집 기록`;
 document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => go(b.dataset.v));
 function go(v) {
   document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.v === v));
@@ -259,14 +323,38 @@ function go(v) {
 
 /* ---------- 예약할 때 ---------- */
 let route = H.routes[0];
-H.routes.forEach(r => {
-  const b = Object.assign(document.createElement('button'), { className: 'chip', textContent: `${r.dep} → ${r.arr}` });
-  b.setAttribute('aria-pressed', r === route);
-  b.onclick = () => { route = r; $('routes').querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); renderBook(); };
-  $('routes').append(b);
-});
+const deps = [...new Set(H.routes.map(r => r.dep))];
+$('r-dep').innerHTML = deps.map(d => `<option>${d}</option>`).join('');
+function fillArr(keep) {
+  const arrs = H.routes.filter(r => r.dep === $('r-dep').value).map(r => r.arr);
+  $('r-arr').innerHTML = arrs.map(a => `<option>${a}</option>`).join('');
+  if (keep && arrs.includes(keep)) $('r-arr').value = keep;
+}
+function setRoute() { route = H.routes.find(r => r.dep === $('r-dep').value && r.arr === $('r-arr').value) || route; renderBook(); renderJeju(); }
+$('r-dep').value = route.dep; fillArr(route.arr);
+$('r-dep').onchange = () => { fillArr($('r-arr').value); setRoute(); };
+$('r-arr').onchange = setRoute;
+
 const CAUSE = { '항공기 연결': '앞 비행기가 늦게 와서', '항공교통흐름': '하늘길이 붐벼서', '공항·출입국 절차': '공항 수속이 밀려서', '기상': '날씨 때문에',
   '항공기 정비': '비행기 점검 때문에', '여객·화물처리': '승객·짐 처리가 늦어서', '운항·승무원': '승무원 사정으로', '지상조업': '지상 작업이 늦어서', '기타': '그 밖의 이유로' };
+const AIR_CODE = { '대한항공': 'KE', '아시아나항공': 'OZ', '제주항공': '7C', '진에어': 'LJ', '트리니티항공': 'TW', '티웨이항공': 'TW', '에어부산': 'BX', '에어서울': 'RS',
+  '이스타항공': 'ZE', '에어로케이항공': 'RF', '에어로케이': 'RF', '파라타항공': 'WE', '하이에어': '4H', '섬에어': 'XU' };
+const badge = (name) => `<span class="code">${AIR_CODE[name] || name.slice(0, 2)}</span>`;
+
+function drawHours(hours, best, worst) {
+  const W = 640, H0 = 200, pb = 26, pt = 24, n = hours.length, bw = (W - 8) / n;
+  const max = Math.max(...hours.map(h => h.late / h.base)) * 1.15;
+  const y = (v) => pt + (H0 - pt - pb) * (1 - v / max);
+  let s = `<svg viewBox="0 0 ${W} ${H0}" role="img" aria-label="출발 시간대별로 늦게 뜬 비율">`;
+  hours.forEach((h, i) => {
+    const v = h.late / h.base, x = 4 + i * bw + bw * .18, w = bw * .64;
+    const c = h === best ? 'var(--ok)' : h === worst ? 'var(--bad)' : 'var(--map-sub)';
+    s += `<rect x="${x}" y="${y(v)}" width="${w}" height="${H0 - pb - y(v)}" rx="3" fill="${c}" opacity="${h === best || h === worst ? 1 : .55}"><title>${h.h}시 · 10번 중 ${tenOf(h.late, h.base)}번 늦음 · ${h.flights.toLocaleString()}편</title></rect>`;
+    if (h === best || h === worst) s += `<text class="v" x="${x + w / 2}" y="${y(v) - 7}" text-anchor="middle" style="fill:${c}">${Math.round(100 * v)}%</text>`;
+    if (h.h % 3 === 0 || h === best || h === worst) s += `<text x="${x + w / 2}" y="${H0 - 7}" text-anchor="middle">${h.h}시</text>`;
+  });
+  return s + '</svg>';
+}
 
 function renderBook() {
   const r = route, same = (x) => x.dep === r.dep && x.arr === r.arr;
@@ -277,31 +365,33 @@ function renderBook() {
   $('b-ask').textContent = `${r.dep} → ${r.arr}, 몇 시 비행기가 덜 늦어요?`;
   $('b-ans').innerHTML = `<em class="ok">${hourName(best.h)}</em> 비행기가 제일 덜 늦어요`;
   $('b-why').innerHTML = `${hourName(best.h)} 비행기는 <b>${late10(tenOf(best.late, best.base))}</b>. ${hourName(worst.h)}는 ${late10(tenOf(worst.late, worst.base))}.`;
-  $('b-hours').innerHTML = hours.map(h => { const n = tenOf(h.late, h.base); return `<div class="${level(n)}${h === best ? ' best' : ''}" title="${h.h}시 · ${h.flights.toLocaleString()}편"><b>${h.h}시</b><span>${n}/10</span></div>`; }).join('');
+  $('b-hours').innerHTML = drawHours(hours, best, worst) + `<p class="small" style="color:var(--map-sub);margin:6px 2px 0">막대가 높을수록 15분 넘게 늦게 뜬 비행기가 많아요. 초록은 제일 덜 늦는 시간, 빨강은 제일 많이 늦는 시간이에요.</p>`;
 
-  const al = H.route_airline.filter(same).sort((a, b) => rate(a) - rate(b));
-  $('b-air').innerHTML = al.map(a => { const n = tenOf(a.late, a.base); return `<div class="row"><span class="nm">${a.airline}</span>${dots(n)}<span class="say">${late10(n)}</span></div>`; }).join('') || '<p class="why">기록이 부족해요.</p>';
-  const fl = H.route_flight.filter(same).sort((a, b) => a.rk - b.rk);
-  $('b-fl').innerHTML = fl.map(a => { const n = tenOf(a.late, a.base); return `<div class="row"><span class="nm">${a.flight}<small>${a.airline}</small></span>${dots(n)}<span class="say">${late10(n)}</span></div>`; }).join('') || '<p class="why">기록이 부족해요.</p>';
+  const card = (rk, name, sub, n, extra) => `<div class="it"><span class="rk">${rk}위</span><span class="nm">${name}${sub ? `<small>${sub}</small>` : ''}</span><span class="big">10번 중 ${n}번<small>늦어요</small></span>${dots(n)}${extra || ''}</div>`;
+  $('air-h').textContent = `${r.dep} → ${r.arr}에서 제일 많이 늦는 항공사`;
+  const al = H.route_airline.filter(same).sort((a, b) => rate(b) - rate(a)).slice(0, 3);
+  $('b-air').innerHTML = al.map((a, i) => card(i + 1, `${badge(a.airline)}${a.airline}`, '', tenOf(a.late, a.base))).join('') || '<p class="why">기록이 부족해요.</p>';
+  $('fl-h').textContent = `${r.dep} → ${r.arr}에서 제일 자주 늦는 비행기`;
+  const fl = H.route_flight.filter(same).sort((a, b) => a.rk - b.rk).slice(0, 3);
+  $('b-fl').innerHTML = fl.map((a, i) => card(i + 1, a.flight, a.airline, tenOf(a.late, a.base))).join('') || '<p class="why">기록이 부족해요.</p>';
 
+  $('cause-h').textContent = `${r.dep} → ${r.arr} 비행기가 늦는 이유`;
   const cs = H.route_cause.filter(same).filter(c => CAUSE[c.cause_group]).sort((a, b) => b.late - a.late);
   const tot = cs.reduce((s, c) => s + c.late, 0);
   if (tot) {
     const top = cs[0];
-    $('b-cause').innerHTML = `늦은 비행기 10대 중 <em class="bad">${Math.round(10 * top.late / tot)}대</em>는 ${CAUSE[top.cause_group]}예요`;
+    $('b-cause').innerHTML = `이 노선에서 늦은 비행기 10대 중 <em class="bad">${Math.round(10 * top.late / tot)}대</em>는 ${CAUSE[top.cause_group]}예요`;
     $('b-causes').innerHTML = cs.slice(1, 4).map(c => `<div class="row"><span class="nm">${CAUSE[c.cause_group]}</span><span class="tag">10대 중 ${Math.max(1, Math.round(10 * c.late / tot))}대</span></div>`).join('');
   }
+  const all = H.cause_all.filter(c => CAUSE[c.cause_group]);
+  const atot = all.reduce((s, c) => s + c.late, 0);
+  $('b-rank').innerHTML = all.slice(0, 5).map(c => `<li class="${cs[0] && c.cause_group === cs[0].cause_group ? 'me' : ''}"><span>${CAUSE[c.cause_group]}</span><span class="tag">100대 중 ${Math.max(1, Math.round(100 * c.late / atot))}대</span></li>`).join('');
 }
 
-let jo = '전체';
-['전체', '김포', '김해', '청주', '대구', '광주'].forEach(a => {
-  const b = Object.assign(document.createElement('button'), { className: 'chip', textContent: a === '전체' ? '모든 공항' : `${a}에서` });
-  b.setAttribute('aria-pressed', a === jo);
-  b.onclick = () => { jo = a; $('j-pick').querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); renderJeju(); };
-  $('j-pick').append(b);
-});
 function renderJeju() {
   const m = Array.from({ length: 12 }, (_, i) => ({ m: i + 1, f: 0, c: 0, w: 0 }));
+  const jo = route.dep !== '제주' && H.jeju_month.some(r => r.dep === route.dep) ? route.dep : '전체';
+  $('j-ask').textContent = jo === '전체' ? '제주 가는 비행기, 언제 결항이 많아요?' : `${jo}에서 제주 가는 비행기, 언제 결항이 많아요?`;
   H.jeju_month.filter(r => r.m && (jo === '전체' || r.dep === jo)).forEach(r => { const x = m[r.m - 1]; x.f += r.flights; x.c += r.cancelled; x.w += r.cancelled_weather; });
   const rate = (x) => x.f ? x.c / x.f : 0;
   const top = m.reduce((a, b) => rate(b) > rate(a) ? b : a);
@@ -315,20 +405,38 @@ function renderJeju() {
 }
 
 /* ---------- 편 고르기 ---------- */
-let day = '20261124', cur = null, tNow = null;
-DAYS.forEach(d => {
-  const b = Object.assign(document.createElement('button'), { className: 'chip', textContent: `11월 ${+d.slice(6)}일` });
-  b.setAttribute('aria-pressed', d === day);
-  b.onclick = () => { day = d; $('days').querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); fillList(); const same = ROT[day].find(x => x.flight_no === cur.flight_no); pick(same || sample()); };
-  $('days').append(b);
-});
+// 기본 비행일 = 출발 기록이 다 찬 가장 최근 날(오늘 새벽 파일은 아직 뜨기 전 편이 많다)
+const fullDay = [...DAYS].reverse().find(d => ROT[d].filter(r => r.dep_actual_at).length > ROT[d].length * .8) || DAYS[DAYS.length - 1];
+let day = fullDay, cur = null, tNow = null;
+const iso = (d) => `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6)}`;
+const ymd = (s) => s.replace(/-/g, '');
+const dayLabel = (d) => `${+d.slice(4, 6)}/${+d.slice(6)}(${'일월화수목금토'[new Date(iso(d)).getDay()]})`;
+const shift = (d, n) => { const t = new Date(iso(d) + 'T00:00:00'); t.setDate(t.getDate() + n); return `${t.getFullYear()}${String(t.getMonth() + 1).padStart(2, '0')}${String(t.getDate()).padStart(2, '0')}`; };
+$('day').min = iso(DAYS[0]); $('day').max = iso(DAYS[DAYS.length - 1]); $('day').value = iso(day);
+function goDay(d, fno) { if (!ROT[d]) return; day = d; $('day').value = iso(d); fillList(); const same = ROT[day].find(x => x.flight_no === (fno || cur.flight_no)); pick(same || sample()); }
+$('day').addEventListener('change', () => goDay(ymd($('day').value)));
 function fillList() { $('fnos').innerHTML = [...new Set(ROT[day].map(r => r.flight_no))].sort().map(f => `<option value="${f}">`).join(''); }
 function sample() { const c = ROT[day].filter(r => r.delay_origin_type === 'propagated' && r.carried_delay_min > 0 && r.dep_delay_gate_est_min > 15).sort((a, b) => Math.abs(a.dep_delay_gate_est_min - 35) - Math.abs(b.dep_delay_gate_est_min - 35)); return c[0] || ROT[day][0]; }
 $('fno').addEventListener('change', () => { const r = ROT[day].find(x => x.flight_no === $('fno').value.trim().toUpperCase()); if (r) pick(r); });
 const legsOf = (r) => ROT[day].filter(x => x.reg_no === r.reg_no).sort((a, b) => a.dep_sched_at < b.dep_sched_at ? -1 : 1);
 const prevOf = (r) => { const L = legsOf(r), i = L.indexOf(r); return i > 0 ? L[i - 1] : null; };
 
-function pick(r) { cur = r; tNow = null; $('fno').value = r.flight_no; { const m = mins(r.arr_actual_at || r.arr_sched_at) + 90; $('meet').value = clock(Math.ceil(m / 30) * 30); } renderLeave(); renderMap(); renderPlan(); renderAirport(); renderArrive(); }
+function pick(r) { cur = r; tNow = null; $('fno').value = r.flight_no; renderHist(); { const m = mins(r.arr_actual_at || r.arr_sched_at) + 90; $('meet').value = clock(Math.ceil(m / 30) * 30); } renderLeave(); renderMap(); renderPlan(); renderAirport(); renderArrive(); }
+
+function renderHist() {
+  const r = cur, f = r.flight_no;
+  const on = (d) => ROT[d] ? ROT[d].find(x => x.flight_no === f && x.dep_airport === r.dep_airport) : undefined;
+  $('hist-h').textContent = `${f}, 다른 날은 어땠어요?`;
+  const box = (label, d) => { const x = on(d); const m = x ? x.dep_delay_gate_est_min : null;
+    return `<div><span>${label} · ${ROT[d] ? dayLabel(d) : '기록 없음'}</span><b class="${x ? 'c-' + (delayTag(m) || 'ok') : ''}" style="color:var(--${{ ok: 'ok', mid: 'mid', bad: 'bad' }[delayTag(m)] || 'sub'})">${!ROT[d] ? '-' : !x ? '운항 없음' : m == null ? '기록 없음' : delayWord(m)}</b></div>`; };
+  const seen = DAYS.map(on).filter(x => x && x.dep_delay_gate_est_min != null);
+  const lateN = seen.filter(x => x.dep_delay_gate_est_min > 15).length;
+  $('cmp').innerHTML = box('하루 전', shift(day, -1)) + box('일주일 전 같은 요일', shift(day, -7)) +
+    `<div><span>최근 ${seen.length}번 운항 중</span><b>${lateN}번 늦었어요</b></div>`;
+  $('cal').innerHTML = DAYS.map(d => { const x = on(d); const m = x ? x.dep_delay_gate_est_min : null;
+    return `<button data-d="${d}" class="${x && m != null ? delayTag(m) : ''}" aria-pressed="${d === day}" ${x ? '' : 'disabled'}><b>${+d.slice(6)}일</b>${!x ? '없음' : m == null ? '-' : m <= 15 ? '제때' : dur(m)}</button>`; }).join('');
+  $('cal').querySelectorAll('button[data-d]').forEach(b => b.onclick = () => goDay(b.dataset.d, f));
+}
 
 function renderLeave() {
   const r = cur, d = r.dep_delay_gate_est_min, carried = r.carried_delay_min;
@@ -385,13 +493,16 @@ function renderAirport() {
 
   const h = H.route_hour.find(x => x.dep === ko(r.dep_airport) && x.arr === ko(r.arr_airport) && x.h === +r.dep_sched_at.slice(11, 13));
   if (h && h.p90 != null) {
-    $('w-ans').innerHTML = `이 시간대 ${ko(r.dep_airport)} → ${ko(r.arr_airport)}는 10번 중 9번은 <em>${Math.max(0, Math.round(h.p90))}분 안에</em> 떠요`;
-    $('w-why').textContent = d > 15 ? `오늘 이 비행기는 ${dur(d)} 늦었어요. 출발 시각이 바뀌면 그 시각을 먼저 보세요.` : '출발 시각이 바뀌면 그 시각을 먼저 보세요.';
+    const p50 = Math.max(0, Math.round(h.p50)), p90 = Math.max(0, Math.round(h.p90)), mark = d == null ? null : Math.max(0, Math.min(d, 90));
+    $('w-ans').innerHTML = d > 15 ? `지금 <em class="${delayTag(d)}">${dur(d)}</em> 늦었어요. 보통은 <em>${p90}분</em>을 넘기지 않아요` : `늦어져도 보통 <em>${p90}분</em> 안에는 떠요`;
+    $('w-why').innerHTML = `이 시간대 ${ko(r.dep_airport)} → ${ko(r.arr_airport)} 비행기 10대 중 9대가 ${p90}분 안에, 절반은 ${p50}분 안에 떠났어요. 출발 시각이 바뀌었다고 안내되면 그 시각을 먼저 보세요.
+      <div class="gauge"><div class="bar">${mark != null ? `<i style="left:calc(${mark / 90 * 100}% - 2px)" title="이 비행기"></i>` : ''}<span style="position:absolute;left:${p90 / 90 * 100}%;top:-2px;width:2px;height:18px;background:var(--card)"></span></div>
+      <div class="lab"><span>제때</span><span>${p90}분 (10대 중 9대)</span><span>90분+</span></div></div>`;
   } else { $('w-ans').textContent = '이 노선은 지난 기록이 부족해요'; $('w-why').textContent = ''; }
 
   const t0 = mins(r.dep_sched_at);
   const rows = ROT[day].filter(x => x !== r && x.dep_airport === r.dep_airport && x.arr_airport === r.arr_airport && mins(x.dep_sched_at) >= t0 - 30).sort((a, b) => a.dep_sched_at < b.dep_sched_at ? -1 : 1).slice(0, 5);
-  $('alt').innerHTML = rows.length ? rows.map(x => `<li><span class="t">${hm(x.dep_sched_at)}</span><span>${x.airline_name} <small style="color:var(--sub)">${x.flight_no}</small></span><span class="tag ${delayTag(x.dep_delay_gate_est_min)}">${delayWord(x.dep_delay_gate_est_min)}</span></li>`).join('') : '<li><span></span><span class="why">이날은 다음 비행기가 없어요.</span><span></span></li>';
+  $('alt').innerHTML = rows.length ? rows.map(x => `<li><span class="t">${hm(x.dep_sched_at)}</span><span class="who">${badge(x.airline_name)}${x.airline_name}<small>${x.flight_no}</small></span><span class="tag ${delayTag(x.dep_delay_gate_est_min)}">${delayWord(x.dep_delay_gate_est_min) || '예정'}</span></li>`).join('') : '<li><span></span><span class="why">이날은 다음 비행기가 없어요.</span><span></span></li>';
 }
 
 /* ---------- 도착 ---------- */

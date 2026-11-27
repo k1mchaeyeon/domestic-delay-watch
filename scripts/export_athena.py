@@ -84,6 +84,8 @@ data["route_cause"] = num(q(f"""SELECT airport AS dep, other_airport AS arr, cau
 data["airline_all"] = num(q(f"""SELECT airline, count(*) AS flights, {BASEN} AS base, {LATE} AS late, {CANCEL} AS cancelled,
   round(avg(CASE WHEN use_delay THEN delay_min END),1) AS avg_delay
 {DEP} AND "date" >= '20250101' GROUP BY 1 HAVING count(*) >= 2000 ORDER BY 1.0*{LATE}/nullif({BASEN},0) DESC"""))
+data["cause_all"] = num(q(f"""SELECT cause_group, count(*) AS late
+{DEP} AND "date" >= '20250101' AND use_delay AND is_late AND cause_group <> '' GROUP BY 1 ORDER BY 2 DESC"""))
 data["hour_all"] = num(q(f"""SELECT hour(sched_dt) AS h, count(*) AS flights, {BASEN} AS base, {LATE} AS late
 {DEP} AND "date" >= '20250101' GROUP BY 1 ORDER BY 1"""))
 data["jeju_month"] = num(q(f"""SELECT airport AS dep, month(sched_dt) AS m, count(*) AS flights, {CANCEL} AS cancelled,
@@ -98,9 +100,16 @@ ROT_COLS = ("flight_date, reg_no, airline_name, flight_no, dep_airport, arr_airp
             "prev_arr_sched_at, prev_arr_actual_at, prev_arr_delay_min, sched_turnaround_min, leg_no, "
             "delay_origin_type, carried_delay_min, own_added_delay_min, is_carried_delay, dep_status")
 os.makedirs(OUT, exist_ok=True)
-for d in ["20261123", "20261124", "20261125"]:
+for d in [f"202611{x:02d}" for x in range(18, 28)]:
     rot = q(f"SELECT {ROT_COLS} FROM assac_kac_clean.kac_rotation WHERE dt='{d}' AND is_domestic ORDER BY reg_no, dep_sched_at")
+    if not rot:  # Athena에 없는 날짜(11/18~22는 로컬 백필 파일)는 덮어쓰지 않는다
+        print("rotation", d, "없음, 건너뜀")
+        continue
     json.dump(num(rot), open(f"{OUT}/rotation_{d}.json", "w"), ensure_ascii=False, separators=(",", ":"))
     print("rotation", d, len(rot))
 json.dump(data, open(f"{OUT}/history.json", "w"), ensure_ascii=False, separators=(",", ":"))
 print({k: len(v) for k, v in data.items() if isinstance(v, list)})
+# 화면이 읽을 날짜 목록
+import glob
+days = sorted(os.path.basename(f)[9:17] for f in glob.glob(f"{OUT}/rotation_*.json"))
+json.dump(days, open(f"{OUT}/days.json", "w"))
