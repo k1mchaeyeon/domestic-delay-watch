@@ -97,8 +97,18 @@ function Card({ children }: { children: React.ReactNode }) {
   return <section className="min-w-0 rounded-[20px] border border-line bg-card px-5 py-5">{children}</section>;
 }
 
+// 로고: public/logos/<코드>.svg (위키미디어 커먼즈 퍼블릭 도메인). 없는 항공사는 코드 배지
+const LOGOS = new Set(["KE", "OZ", "7C", "TW", "BX", "RS", "ZE", "RF", "WE", "XU"]);
 function Badge({ name }: { name: string }) {
-  return <span className="mr-2 inline-grid size-7 place-items-center rounded-full bg-ink align-middle font-mono text-[11px] font-bold text-bg">{AIR_CODE[name] ?? name.slice(0, 2)}</span>;
+  const code = AIR_CODE[name];
+  if (code && LOGOS.has(code))
+    return (
+      <span className="mr-2 inline-grid h-[30px] w-16 flex-none place-items-center rounded-lg border border-line bg-white px-1.5 py-1 align-middle">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`/logos/${code}.svg`} alt="" className="block max-h-full max-w-full" />
+      </span>
+    );
+  return <span className="mr-2 inline-grid size-7 place-items-center rounded-full bg-ink align-middle font-mono text-[11px] font-bold text-bg">{code ?? name.slice(0, 2)}</span>;
 }
 
 function Top({ rank, name, n }: { rank: number; name: React.ReactNode; n: number }) {
