@@ -27,18 +27,18 @@ export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string 
 
   const rRate = Math.round((1000 * route.late) / route.base) / 10;
   const airCols: Col<RouteAirline>[] = [
-    { key: "rk", label: "순위", width: "56px", render: (a) => <span className="text-ink-2">{airlines.indexOf(a) + 1}</span> },
+    { key: "rk", label: "순위", width: "48px", render: (a) => <span className="text-ink-2">{airlines.indexOf(a) + 1}</span> },
     { key: "nm", label: "항공사", render: (a) => <Airline name={a.airline} /> },
     { key: "ten", label: "늦게 뜬 횟수", align: "right", render: (a) => <span className={airlines.indexOf(a) === 0 ? "font-semibold text-bad" : ""}>10번 중 {tenOf(a.late, a.base)}번</span> },
-    { key: "bar", label: "", width: "120px", render: (a) => <Meter value={rate(a)} max={rate(airlines[0])} tone={airlines.indexOf(a) === 0 ? "bad" : undefined} /> },
-    { key: "avg", label: "평균 지연", align: "right", render: (a) => `${a.avg_delay}분` },
+    { key: "bar", label: "", width: "120px", wide: true, render: (a) => <Meter value={rate(a)} max={rate(airlines[0])} tone={airlines.indexOf(a) === 0 ? "bad" : undefined} /> },
+    { key: "avg", label: "평균 지연", align: "right", wide: true, render: (a) => `${a.avg_delay}분` },
   ];
   const flCols: Col<RouteFlight>[] = [
-    { key: "rk", label: "순위", width: "56px", render: (f) => <span className="text-ink-2">{flights.indexOf(f) + 1}</span> },
+    { key: "rk", label: "순위", width: "48px", render: (f) => <span className="text-ink-2">{flights.indexOf(f) + 1}</span> },
     { key: "no", label: "편명", render: (f) => <span className="font-medium">{f.flight}</span> },
     { key: "al", label: "항공사", render: (f) => <Airline name={f.airline} /> },
     { key: "ten", label: "늦게 뜬 횟수", align: "right", render: (f) => <span className={flights.indexOf(f) === 0 ? "font-semibold text-bad" : ""}>10번 중 {tenOf(f.late, f.base)}번</span> },
-    { key: "n", label: "운항", align: "right", render: (f) => `${f.base.toLocaleString()}번` },
+    { key: "n", label: "운항", align: "right", wide: true, render: (f) => `${f.base.toLocaleString()}번` },
   ];
 
   return (

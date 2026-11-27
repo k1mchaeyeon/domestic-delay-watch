@@ -98,7 +98,7 @@ export function Button({ children, onClick, active }: { children: ReactNode; onC
 }
 
 /** 표: 머리글 12px 회색, 행 36px, 숫자 오른쪽 정렬 */
-export type Col<T> = { key: string; label: string; align?: "left" | "right"; width?: string; render: (row: T) => ReactNode };
+export type Col<T> = { key: string; label: string; align?: "left" | "right"; width?: string; wide?: boolean; render: (row: T) => ReactNode };
 export function Table<T>({ cols, rows, rowKey, onRow, selected }: { cols: Col<T>[]; rows: T[]; rowKey: (r: T) => string; onRow?: (r: T) => void; selected?: (r: T) => boolean }) {
   return (
     <div className="-mx-4 -my-4 overflow-x-auto">
@@ -106,7 +106,7 @@ export function Table<T>({ cols, rows, rowKey, onRow, selected }: { cols: Col<T>
         <thead>
           <tr className="border-b border-line">
             {cols.map((c) => (
-              <th key={c.key} style={{ width: c.width }} className={`h-9 whitespace-nowrap px-4 text-xs font-medium text-ink-2 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.label}</th>
+              <th key={c.key} style={{ width: c.width }} className={`${c.wide ? "hidden sm:table-cell" : ""} h-9 whitespace-nowrap px-4 text-xs font-medium text-ink-2 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.label}</th>
             ))}
           </tr>
         </thead>
@@ -115,7 +115,7 @@ export function Table<T>({ cols, rows, rowKey, onRow, selected }: { cols: Col<T>
             <tr key={rowKey(r)} onClick={onRow ? () => onRow(r) : undefined}
               className={`h-9 border-b border-line last:border-b-0 ${onRow ? "cursor-pointer hover:bg-subtle" : ""} ${selected?.(r) ? "bg-accent-soft" : ""}`}>
               {cols.map((c) => (
-                <td key={c.key} className={`num whitespace-nowrap px-4 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.render(r)}</td>
+                <td key={c.key} className={`${c.wide ? "hidden sm:table-cell" : ""} num whitespace-nowrap px-4 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.render(r)}</td>
               ))}
             </tr>
           ))}

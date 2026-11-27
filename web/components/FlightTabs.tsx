@@ -59,7 +59,7 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
         <Table<Leg> cols={[
           { key: "t", label: "출발 예정", width: "96px", render: (l) => hm(l.dep_sched_at) },
           { key: "rt", label: "구간", render: (l) => `${ko(l.dep_airport)} → ${ko(l.arr_airport)}` },
-          { key: "no", label: "편명", render: (l) => l.flight_no },
+          { key: "no", label: "편명", wide: true, render: (l) => l.flight_no },
           { key: "s", label: "출발", align: "right", render: (l) => <Badge tone={delayTone(l.dep_delay_gate_est_min)}>{delayWord(l.dep_delay_gate_est_min)}</Badge> },
         ]} rows={legs} rowKey={(l) => l.flight_no + l.dep_sched_at} selected={(l) => l === r} />
       </Card>
@@ -109,7 +109,7 @@ export function AirportTab({ h, AP, ROT, day, cur }: Ctx) {
             <Table<Leg> cols={[
               { key: "t", label: "출발 예정", width: "96px", render: (x) => <span className="font-medium">{hm(x.dep_sched_at)}</span> },
               { key: "a", label: "항공사", render: (x) => <Airline name={x.airline_name} /> },
-              { key: "n", label: "편명", render: (x) => x.flight_no },
+              { key: "n", label: "편명", wide: true, render: (x) => x.flight_no },
               { key: "s", label: "출발", align: "right", render: (x) => <Badge tone={delayTone(x.dep_delay_gate_est_min)}>{x.dep_delay_gate_est_min == null ? "예정" : delayWord(x.dep_delay_gate_est_min)}</Badge> },
             ] as Col<Leg>[]} rows={alts} rowKey={(x) => x.flight_no + x.dep_sched_at} />
           ) : <p className="text-ink-2">이날은 {ko(r.arr_airport)} 가는 다음 비행기가 없어요</p>}

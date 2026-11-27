@@ -69,22 +69,31 @@ export function Tabs({ h }: { h: History }) {
       </aside>
 
       <div className="min-w-0">
-        <header className="sticky top-0 z-10 flex min-h-14 flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-line bg-bg/90 px-4 py-2 backdrop-blur-[2px] md:px-6">
-          <h1 className="text-[15px] font-semibold">{meta.label}</h1>
-          <div className="flex flex-wrap items-center gap-3">
-            {step === "book" ? (
-              <>
-                <Select label="출발" value={dep} options={deps} onChange={setDep} />
-                <Select label="도착" value={arr} options={arrs} onChange={setArr} />
-              </>
-            ) : (
-              <>
-                <TextInput label="편명" value={fno} onChange={setFno} list="fnos" placeholder="예: KE1626" />
-                <datalist id="fnos">{flightNos.map((f) => <option key={f} value={f} />)}</datalist>
-                {DAYS.length > 0 && <DateInput label="비행일" value={iso(day)} min={iso(DAYS[0])} max={iso(DAYS[DAYS.length - 1])} onChange={(v) => goDay(ymd(v))} />}
-                {cur && <span className="num text-xs text-ink-2">{ko(cur.dep_airport)} → {ko(cur.arr_airport)} · {dayLabel(day)} {hm(cur.dep_sched_at)} 출발 예정</span>}
-              </>
-            )}
+        <header className="sticky top-0 z-10 border-b border-line bg-bg/90 px-4 py-3 backdrop-blur-[2px] md:px-6">
+          {/* 제목·요약(왼쪽 두 줄)과 필터(오른쪽)를 나눠, 한 줄에 몰아 넣지 않는다 */}
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+            <div className="min-w-0">
+              <h1 className="text-[15px] font-semibold leading-tight">{meta.label}</h1>
+              <p className="num mt-0.5 truncate text-xs text-ink-2">
+                {step === "book" ? `${dep} → ${arr} 노선의 지난 운항 기록`
+                  : cur ? `${cur.flight_no} · ${ko(cur.dep_airport)} → ${ko(cur.arr_airport)} · ${dayLabel(day)} ${hm(cur.dep_sched_at)} 출발 예정` : "편명과 비행일을 골라 주세요"}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {step === "book" ? (
+                <>
+                  <Select label="출발" value={dep} options={deps} onChange={setDep} />
+                  <span aria-hidden="true" className="text-ink-3">→</span>
+                  <Select label="도착" value={arr} options={arrs} onChange={setArr} />
+                </>
+              ) : (
+                <>
+                  <TextInput label="편명" value={fno} onChange={setFno} list="fnos" placeholder="예: KE1626" />
+                  <datalist id="fnos">{flightNos.map((f) => <option key={f} value={f} />)}</datalist>
+                  {DAYS.length > 0 && <DateInput label="비행일" value={iso(day)} min={iso(DAYS[0])} max={iso(DAYS[DAYS.length - 1])} onChange={(v) => goDay(ymd(v))} />}
+                </>
+              )}
+            </div>
           </div>
         </header>
 
