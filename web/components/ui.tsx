@@ -106,7 +106,7 @@ export function Table<T>({ cols, rows, rowKey, onRow, selected }: { cols: Col<T>
         <thead>
           <tr className="border-b border-line">
             {cols.map((c) => (
-              <th key={c.key} style={{ width: c.width }} className={`h-9 px-4 text-xs font-medium text-ink-2 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.label}</th>
+              <th key={c.key} style={{ width: c.width }} className={`h-9 whitespace-nowrap px-4 text-xs font-medium text-ink-2 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.label}</th>
             ))}
           </tr>
         </thead>
@@ -115,7 +115,7 @@ export function Table<T>({ cols, rows, rowKey, onRow, selected }: { cols: Col<T>
             <tr key={rowKey(r)} onClick={onRow ? () => onRow(r) : undefined}
               className={`h-9 border-b border-line last:border-b-0 ${onRow ? "cursor-pointer hover:bg-subtle" : ""} ${selected?.(r) ? "bg-accent-soft" : ""}`}>
               {cols.map((c) => (
-                <td key={c.key} className={`num px-4 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.render(r)}</td>
+                <td key={c.key} className={`num whitespace-nowrap px-4 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.render(r)}</td>
               ))}
             </tr>
           ))}

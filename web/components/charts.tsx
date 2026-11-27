@@ -2,26 +2,37 @@
 
 // 막대그래프 하나로 두 차트(시간대별 지연률, 월별 결항률)를 그린다.
 // 회색 막대 + 강조는 의미 있는 1~2개(제일 덜/제일 많이), y축 눈금·범례·마우스 올리면 수치
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type Bar = { key: string | number; label: string; value: number; tip: string; tone?: "ok" | "bad" | "accent" };
 
 const FILL = { ok: "var(--ok)", bad: "var(--bad)", accent: "var(--accent)" } as const;
 
-export function BarChart({ bars, unit = "%", height = 220, tickEvery = 1, legend }: {
+export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryIn = 1, legend }: {
   bars: Bar[]; unit?: string; height?: number; tickEvery?: number; legend?: { tone: keyof typeof FILL; label: string }[];
 }) {
   const [hover, setHover] = useState<number | null>(null);
-  const W = 720, H = height, pl = 40, pr = 8, pt = 12, pb = 28;
+  // 그려지는 실제 폭을 재서 viewBox에 쓴다(글자가 화면 크기 따라 커지거나 작아지지 않게)
+  const box = useRef<HTMLDivElement>(null);
+  const [W, setW] = useState(720);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setW(Math.max(280, Math.round(e.contentRect.width))));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const H = height, pl = 40, pr = 8, pt = 12, pb = 28;
   const raw = Math.max(...bars.map((b) => b.value), 0);
   const step = niceStep(raw / 4);
   const max = Math.max(step, Math.ceil(raw / step) * step);
   const ticks = Array.from({ length: Math.round(max / step) + 1 }, (_, i) => i * step);
   const bw = (W - pl - pr) / Math.max(1, bars.length);
+  const tickEvery = bw < 34 ? Math.max(tickEveryIn, Math.ceil(34 / bw)) : tickEveryIn;
   const y = (v: number) => pt + (H - pt - pb) * (1 - v / max);
   const fmt = (v: number) => (step < 1 ? v.toFixed(1) : String(Math.round(v)));
   return (
-    <div className="relative">
+    <div className="relative" ref={box}>
       <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full" role="img" aria-label={bars.map((b) => b.tip).join(", ")}>
         {ticks.map((t) => (
           <g key={t}>

@@ -18,9 +18,18 @@ export function SatMap({ legs, cur, AP, SAT }: { legs: Leg[]; cur: Leg; AP: Airp
   const pts = legs.flatMap((l) => [AP[l.dep_airport], AP[l.arr_airport]]).filter(Boolean).map((a) => proj(a.lat, a.lon));
   let x0 = Math.min(...pts.map((p) => p[0])) - 110, x1 = Math.max(...pts.map((p) => p[0])) + 110;
   let y0 = Math.min(...pts.map((p) => p[1])) - 90, y1 = Math.max(...pts.map((p) => p[1])) + 90;
-  const want = 16 / 9, cw = x1 - x0, ch = y1 - y0;
+  // 4:3에 맞추되 사진 밖(빈 곳)이 보이지 않게 사진 범위 안으로 당긴다
+  const want = 4 / 3, cw = x1 - x0, ch = y1 - y0;
   if (cw / ch < want) { const d = (ch * want - cw) / 2; x0 -= d; x1 += d; } else { const d = (cw / want - ch) / 2; y0 -= d; y1 += d; }
-  const k = (x1 - x0) / 720;
+  const fit = (a: number, b: number, lim: number): [number, number] => {
+    const w = Math.min(b - a, lim);
+    let s = a + (b - a - w) / 2;
+    s = Math.max(0, Math.min(s, lim - w));
+    return [s, s + w];
+  };
+  [x0, x1] = fit(x0, x1, SW);
+  [y0, y1] = fit(y0, y1, SH);
+  const k = (x1 - x0) / 460;
 
   let pos: [number, number] | null = null;
   let say = "위치를 몰라요";
@@ -52,8 +61,8 @@ export function SatMap({ legs, cur, AP, SAT }: { legs: Leg[]; cur: Leg; AP: Airp
         <span><span className="num font-semibold">{clock(tNow)}</span> <span className="text-ink-2">{say}</span></span>
         {SAT && <span className="text-[11px] text-ink-3">{SAT.credit}</span>}
       </div>
-      <div className="overflow-hidden rounded-[6px] border border-line">
-        <svg viewBox={`${x0} ${y0} ${x1 - x0} ${y1 - y0}`} className="block h-auto w-full" role="img" aria-label="위성 지도 위 공항과 비행기 위치">
+      <div className="overflow-hidden rounded-[6px] border border-line bg-[#13283a]">
+        <svg viewBox={`${x0} ${y0} ${x1 - x0} ${y1 - y0}`} className="mx-auto block h-auto max-h-[480px] w-full" role="img" aria-label="위성 지도 위 공항과 비행기 위치">
           {SAT && <image href={SAT.img} x={0} y={0} width={SW} height={SH} preserveAspectRatio="none" />}
           <rect x={x0} y={y0} width={x1 - x0} height={y1 - y0} fill="#050810" opacity={0.28} />
           {Object.entries(AP).map(([c, a]) => {
