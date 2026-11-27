@@ -116,7 +116,12 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
 .calc { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 6px 0 14px; }
 .calc label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--sub); }
 .calc input { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 9px 12px; color: var(--ink); }
-.soon { border-style: dashed; background: transparent; }
+.mine { padding: 16px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.mine .find { margin: 0; }
+.mine-sum { margin: 0; font-size: 14px; color: var(--sub); }
+.mine-sum b { color: var(--ink); font-weight: 600; }
+.hlegend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 8px 2px 0; font-size: 12px; color: var(--map-sub); }
+.hlegend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; vertical-align: 1px; }
 
 /* 노선 고르기: 예매 화면처럼 출발 → 도착 */
 .route { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: end; padding: 16px 20px; }
@@ -199,6 +204,15 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
     <button role="tab" aria-selected="false" data-v="arrive">도착<span>언제 나올까</span></button>
   </nav>
 
+  <div class="card mine" id="mine" hidden>
+    <div class="find">
+      <input id="fno" list="fnos" placeholder="편명 (예: KE1626)" aria-label="편명" autocomplete="off">
+      <datalist id="fnos"></datalist>
+      <label class="dpick">비행일<input type="date" id="day" aria-label="비행일"></label>
+    </div>
+    <p class="mine-sum" id="mine-sum"></p>
+  </div>
+
   <!-- 예약할 때 -->
   <section class="view" id="v-book">
     <div class="card route">
@@ -219,7 +233,6 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
     <div class="card">
       <h2 id="fl-h">제일 자주 늦는 비행기</h2>
       <div class="top3" id="b-fl"></div>
-      <p class="small">2025년부터 100번 넘게 뜬 비행기 중에서 골랐어요.</p>
     </div>
     <div class="card">
       <h2 id="cause-h">늦는 이유</h2>
@@ -227,7 +240,6 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
       <div class="rows" id="b-causes"></div>
       <h2 style="margin-top:22px">전체 국내선에서 늦는 이유 순위</h2>
       <ol class="rank" id="b-rank"></ol>
-      <p class="small">2025년부터 늦게 뜬 국내선 비행기의 공식 지연 사유를 셌어요.</p>
     </div>
     <div class="card" id="j-card">
       <p class="ask" id="j-ask"></p>
@@ -241,12 +253,7 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
   <section class="view" id="v-leave" hidden>
     <div class="card">
       <p class="ask">내 비행기, 오늘 늦을까요?</p>
-      <div class="find">
-        <input id="fno" list="fnos" placeholder="편명 (예: KE1626)" aria-label="편명" autocomplete="off">
-        <datalist id="fnos"></datalist>
-        <label class="dpick">비행일<input type="date" id="day" aria-label="비행일"></label>
-      </div>
-      <p class="answer" id="l-ans" style="margin-top:12px"></p>
+      <p class="answer" id="l-ans"></p>
       <p class="why" id="l-why"></p>
       <div class="pass" id="pass"></div>
     </div>
@@ -254,7 +261,6 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
       <h2 id="hist-h">같은 비행기, 다른 날은 어땠어요?</h2>
       <div class="cmp" id="cmp"></div>
       <div class="cal" id="cal"></div>
-      <p class="small">칸을 누르면 그날 기록으로 바뀌어요.</p>
     </div>
     <div class="mapcard" id="map"></div>
     <div class="card">
@@ -277,9 +283,8 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
     </div>
     <div class="card">
       <p class="ask">다른 비행기로 바꿀 수 있을까요?</p>
-      <h2 class="answer" style="font-size:1.5rem">같은 곳 가는 다음 비행기</h2>
+      <p class="answer" id="alt-ans" style="font-size:1.5rem"></p>
       <ul class="alt" id="alt"></ul>
-      <p class="small">바꿔 탈 수 있는지는 항공사에 남은 자리와 변경 조건을 물어봐야 해요.</p>
     </div>
   </section>
 
@@ -300,12 +305,6 @@ h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 12px; }
       <p class="answer" id="m-ans" style="font-size:1.4rem"></p>
       <p class="why" id="m-why"></p>
     </div>
-    <div class="card soon">
-      <h2>다음에 붙일 것</h2>
-      <p class="why">지금 날씨로 본 결항 가능성, 실시간 운항 정보, 물어보면 답하는 챗봇</p>
-    </div>
-  </section>
-  <section hidden>
   </section>
 </div>
 
@@ -336,11 +335,12 @@ const late10 = (n) => n <= 0 ? '거의 안 늦어요' : `10번 중 ${n}번 늦�
 const delayWord = (m) => m == null ? '' : m <= 15 ? '제때' : `${dur(m)} 늦음`;
 const delayTag = (m) => m == null ? '' : m <= 15 ? 'ok' : m <= 45 ? 'mid' : 'bad';
 
-$('src').textContent = `항공정보포털 국내선 기록 ${H.period.from.slice(0, 4)}~${H.period.to.slice(0, 4)}년 · 11월 ${+DAYS[0].slice(6)}~${+DAYS[DAYS.length - 1].slice(6)}일 수집 기록`;
+$('src').textContent = `국내선 운항 기록 ${H.period.from.slice(0, 4)}.${+H.period.from.slice(4, 6)}~${H.period.to.slice(0, 4)}.${+H.period.to.slice(4, 6)} · 비행기별 기록 11/${+DAYS[0].slice(6)}~11/${+DAYS[DAYS.length - 1].slice(6)}`;
 document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => go(b.dataset.v));
 function go(v) {
   document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.v === v));
   document.querySelectorAll('.view').forEach(x => x.hidden = x.id !== 'v-' + v);
+  $('mine').hidden = v === 'book';
 }
 
 /* ---------- 예약할 때 ---------- */
@@ -387,7 +387,7 @@ function renderBook() {
   $('b-ask').textContent = `${r.dep} → ${r.arr}, 몇 시 비행기가 덜 늦어요?`;
   $('b-ans').innerHTML = `<em class="ok">${hourName(best.h)}</em> 비행기가 제일 덜 늦어요`;
   $('b-why').innerHTML = `${hourName(best.h)} 비행기는 <b>${late10(tenOf(best.late, best.base))}</b>. ${hourName(worst.h)}는 ${late10(tenOf(worst.late, worst.base))}.`;
-  $('b-hours').innerHTML = drawHours(hours, best, worst) + `<p class="small" style="color:var(--map-sub);margin:6px 2px 0">막대가 높을수록 15분 넘게 늦게 뜬 비행기가 많아요. 초록은 제일 덜 늦는 시간, 빨강은 제일 많이 늦는 시간이에요.</p>`;
+  $('b-hours').innerHTML = drawHours(hours, best, worst) + `<div class="hlegend"><span><i style="background:var(--ok)"></i>제일 덜 늦는 시간</span><span><i style="background:var(--bad)"></i>제일 많이 늦는 시간</span><span>막대 높이 = 15분 넘게 늦게 뜬 비율</span></div>`;
 
   const card = (rk, name, sub, n) => `<div class="it"><span class="rk">${rk}</span><span class="nm">${name}${sub ? `<small>${sub}</small>` : ''}</span><span class="big">10번 중 ${n}번<small>늦어요</small></span><span class="meter" aria-hidden="true"><i style="width:${n * 10}%"></i></span></div>`;
   $('air-h').textContent = `${r.dep} → ${r.arr}에서 제일 많이 늦는 항공사`;
@@ -411,6 +411,8 @@ function renderBook() {
 }
 
 function renderJeju() {
+  $('j-card').hidden = route.arr !== '제주';
+  if (route.arr !== '제주') return;
   const m = Array.from({ length: 12 }, (_, i) => ({ m: i + 1, f: 0, c: 0, w: 0 }));
   const jo = route.dep !== '제주' && H.jeju_month.some(r => r.dep === route.dep) ? route.dep : '전체';
   $('j-ask').textContent = jo === '전체' ? '제주 가는 비행기, 언제 결항이 많아요?' : `${jo}에서 제주 가는 비행기, 언제 결항이 많아요?`;
@@ -443,7 +445,7 @@ $('fno').addEventListener('change', () => { const r = ROT[day].find(x => x.fligh
 const legsOf = (r) => ROT[day].filter(x => x.reg_no === r.reg_no).sort((a, b) => a.dep_sched_at < b.dep_sched_at ? -1 : 1);
 const prevOf = (r) => { const L = legsOf(r), i = L.indexOf(r); return i > 0 ? L[i - 1] : null; };
 
-function pick(r) { cur = r; tNow = null; $('fno').value = r.flight_no; renderHist(); { const m = mins(r.arr_actual_at || r.arr_sched_at) + 90; $('meet').value = clock(Math.ceil(m / 30) * 30); } renderLeave(); renderMap(); renderPlan(); renderAirport(); renderArrive(); }
+function pick(r) { cur = r; tNow = null; $('fno').value = r.flight_no; $('mine-sum').innerHTML = `<b>${r.flight_no}</b> ${ko(r.dep_airport)} → ${ko(r.arr_airport)} · ${dayLabel(day)} ${hm(r.dep_sched_at)} 출발 예정`; renderHist(); { const m = mins(r.arr_actual_at || r.arr_sched_at) + 90; $('meet').value = clock(Math.ceil(m / 30) * 30); } renderLeave(); renderMap(); renderPlan(); renderAirport(); renderArrive(); }
 
 function renderHist() {
   const r = cur, f = r.flight_no;
@@ -516,25 +518,26 @@ function renderPlan() {
 function renderAirport() {
   const r = cur, d = r.dep_delay_gate_est_min, t = r.delay_origin_type;
   $('a-ask').textContent = `${r.flight_no}, 왜 늦어요?`;
-  if (d == null || d <= 15) { $('a-ans').innerHTML = '<em class="ok">늦지 않았어요</em>'; $('a-why').textContent = '예정 시각에서 15분 안에 떴어요.'; }
+  if (d == null || d <= 15) { $('a-ans').innerHTML = '<em class="ok">늦지 않았어요</em>'; $('a-why').textContent = ''; }
   else if (['propagated', 'external'].includes(t) && r.carried_delay_min > 0) {
     $('a-ans').innerHTML = `앞 비행기가 <em class="bad">${dur(r.prev_arr_delay_min)}</em> 늦게 도착해서 늦어요`;
-    $('a-why').innerHTML = `${r.prev_flight}편(${ko(r.prev_dep_airport)} → ${ko(r.dep_airport)})이 ${hm(r.prev_arr_actual_at)}에 들어왔어요. 비행기는 내리고 다시 뜨기까지 40분은 필요해서, 그만큼 출발이 밀렸어요.`;
-  } else if (t === 'first_leg') { $('a-ans').innerHTML = '오늘 첫 비행이라 <em>앞 비행기 탓은 아니에요</em>'; $('a-why').textContent = '공식 지연 사유가 나오면 여기에 보여 드릴게요.'; }
+    $('a-why').innerHTML = `${r.prev_flight}편(${ko(r.prev_dep_airport)} → ${ko(r.dep_airport)})이 예정보다 늦은 ${hm(r.prev_arr_actual_at)}에 들어왔어요. 이 편 출발 예정은 ${hm(r.dep_sched_at)}이었어요.`;
+  } else if (t === 'first_leg') { $('a-ans').innerHTML = '오늘 첫 비행이라 <em>앞 비행기 탓은 아니에요</em>'; $('a-why').textContent = ''; }
   else if (t === 'unknown') { $('a-ans').textContent = '앞 비행기 기록이 없어서 이유를 모르겠어요'; $('a-why').textContent = ''; }
-  else { $('a-ans').innerHTML = '앞 비행기는 <em>제때 왔어요</em>'; $('a-why').innerHTML = `그런데도 <b>${dur(d)}</b> 늦게 떴어요. 공항 혼잡이나 날씨 같은 다른 이유일 수 있어요.`; }
+  else { $('a-ans').innerHTML = '앞 비행기는 <em>제때 왔어요</em>'; $('a-why').innerHTML = `그런데도 <b>${dur(d)}</b> 늦게 떴어요.`; }
 
   const h = H.route_hour.find(x => x.dep === ko(r.dep_airport) && x.arr === ko(r.arr_airport) && x.h === +r.dep_sched_at.slice(11, 13));
   if (h && h.p90 != null) {
     const p50 = Math.max(0, Math.round(h.p50)), p90 = Math.max(0, Math.round(h.p90)), mark = d == null ? null : Math.max(0, Math.min(d, 90));
     $('w-ans').innerHTML = d > 15 ? `지금 <em class="${delayTag(d)}">${dur(d)}</em> 늦었어요. 보통은 <em>${p90}분</em>을 넘기지 않아요` : `늦어져도 보통 <em>${p90}분</em> 안에는 떠요`;
-    $('w-why').innerHTML = `이 시간대 ${ko(r.dep_airport)} → ${ko(r.arr_airport)} 비행기 10대 중 9대가 ${p90}분 안에, 절반은 ${p50}분 안에 떠났어요. 출발 시각이 바뀌었다고 안내되면 그 시각을 먼저 보세요.
+    $('w-why').innerHTML = `이 시간대 ${ko(r.dep_airport)} → ${ko(r.arr_airport)} 비행기 10대 중 9대가 ${p90}분 안에, 절반은 ${p50}분 안에 떠났어요.
       <div class="gauge"><div class="bar"><b style="width:${Math.min(100, p90 / 90 * 100)}%" title="10대 중 9대가 이 안에 떠났어요"></b>${mark != null ? `<i style="left:calc(${mark / 90 * 100}% - 2px)" title="이 비행기"></i>` : ''}</div>
       <div class="lab"><span>제때</span><span>${p90}분 (10대 중 9대)</span><span>90분+</span></div></div>`;
   } else { $('w-ans').textContent = '이 노선은 지난 기록이 부족해요'; $('w-why').textContent = ''; }
 
   const t0 = mins(r.dep_sched_at);
   const rows = ROT[day].filter(x => x !== r && x.dep_airport === r.dep_airport && x.arr_airport === r.arr_airport && mins(x.dep_sched_at) >= t0 - 30).sort((a, b) => a.dep_sched_at < b.dep_sched_at ? -1 : 1).slice(0, 5);
+  $('alt-ans').innerHTML = rows.length ? `${ko(r.arr_airport)} 가는 다음 비행기가 <em>${rows.length}편</em> 있어요` : `이날은 ${ko(r.arr_airport)} 가는 다음 비행기가 없어요`;
   $('alt').innerHTML = rows.length ? rows.map(x => `<li><span class="t">${hm(x.dep_sched_at)}</span><span class="who">${badge(x.airline_name)}${x.airline_name}<small>${x.flight_no}</small></span><span class="tag ${delayTag(x.dep_delay_gate_est_min)}">${delayWord(x.dep_delay_gate_est_min) || '예정'}</span></li>`).join('') : '<li><span></span><span class="why">이날은 다음 비행기가 없어요.</span><span></span></li>';
 }
 
@@ -543,9 +546,9 @@ const EXIT = 15;
 function renderArrive() {
   const r = cur, land = mins(r.arr_actual_at || r.arr_sched_at), sched = mins(r.arr_sched_at);
   $('r-ask').textContent = `${r.flight_no}, ${ko(r.arr_airport)}에 언제 마중 나가면 돼요?`;
-  $('r-ans').innerHTML = `<em>${clock(land + 5 + EXIT)}</em>쯤 나오시면 돼요`;
+  $('r-ans').innerHTML = `<em>${clock(land + 5 + EXIT)}</em>쯤 도착장에 계시면 돼요`;
   const diff = r.arr_actual_at ? land - sched : null;
-  $('r-why').innerHTML = `${r.arr_actual_at ? `${hm(r.arr_actual_at)}에 착륙했어요` : `${hm(r.arr_sched_at)} 도착 예정이에요`}${diff == null ? '' : diff > 5 ? `(예정보다 ${dur(diff)} 늦게)` : diff < -5 ? `(예정보다 ${dur(-diff)} 일찍)` : '(예정대로)'}. 내려서 나오기까지 20분쯤 잡았어요.`;
+  $('r-why').innerHTML = `${r.arr_actual_at ? `${hm(r.arr_actual_at)}에 착륙했어요` : `${hm(r.arr_sched_at)} 도착 예정이에요`}${diff == null ? '' : diff > 5 ? `(예정보다 ${dur(diff)} 늦게)` : diff < -5 ? `(예정보다 ${dur(-diff)} 일찍)` : '(예정대로)'}.`;
   renderMeet();
 }
 ['meet', 'out', 'move'].forEach(id => $(id).addEventListener('input', renderMeet));
@@ -556,7 +559,7 @@ function renderMeet() {
   const left = meet - reach;
   $('m-ans').innerHTML = left >= 0 ? `약속까지 <em class="ok">${dur(left)}</em> 남아요` : `약속에 <em class="bad">${dur(-left)}</em> 늦어요`;
   const ad = H.route_arr_delay.find(x => x.dep === ko(r.dep_airport) && x.arr === ko(r.arr_airport));
-  $('m-why').textContent = ad ? `예약할 때 참고: 이 노선은 10번 중 9번은 예정보다 ${Math.max(0, Math.round(ad.p90))}분 안에 도착해요.` : '';
+  $('m-why').textContent = '';
 }
 
 fillList(); renderBook(); renderJeju(); pick(sample());
