@@ -45,7 +45,7 @@ export function BookTab({ h }: { h: History }) {
 
       <Card>
         <h2 className="mb-3 text-lg font-bold">{dep} → {arr}에서 제일 많이 늦는 항공사</h2>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="flex flex-col">
           {airlines.map((a, i) => (
             <Top key={a.airline} rank={i + 1} name={<><Badge name={a.airline} />{a.airline}</>} n={tenOf(a.late, a.base)} />
           ))}
@@ -54,7 +54,7 @@ export function BookTab({ h }: { h: History }) {
 
       <Card>
         <h2 className="mb-3 text-lg font-bold">{dep} → {arr}에서 제일 자주 늦는 비행기</h2>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="flex flex-col">
           {flights.map((f, i) => (
             <Top key={f.flight} rank={i + 1} name={<>{f.flight}<small className="ml-1.5 text-sm font-normal text-sub">{f.airline}</small></>} n={tenOf(f.late, f.base)} />
           ))}
@@ -102,13 +102,15 @@ function Badge({ name }: { name: string }) {
 }
 
 function Top({ rank, name, n }: { rank: number; name: React.ReactNode; n: number }) {
+  // 순위 목록: 1위만 크게·빨강, 나머지는 같은 줄 높이. 같은 크기 카드 3개를 나란히 두지 않는다
+  const first = rank === 1;
   return (
-    <div className="flex flex-col gap-1.5 rounded-2xl bg-soft px-4 py-3.5">
-      <span className="text-xs font-semibold text-sub">{rank}위</span>
-      <span className="text-xl font-bold">{name}</span>
-      <span className="text-2xl font-bold text-bad">10번 중 {n}번<small className="ml-1 text-sm font-normal text-sub">늦어요</small></span>
-      <span className="flex gap-[3px]" aria-label={`10번 중 ${n}번`}>
-        {Array.from({ length: 10 }, (_, i) => <i key={i} className={`size-2 rounded-full ${i < n ? "bg-bad" : "bg-dot"}`} />)}
+    <div className="grid grid-cols-[24px_1fr_auto] items-center gap-x-3 gap-y-2 border-t border-line py-3 first:border-t-0 first:pt-1">
+      <span className="text-sm font-semibold tabular-nums text-sub">{rank}</span>
+      <span className={`flex min-w-0 items-center font-semibold ${first ? "text-lg" : "text-base"}`}>{name}</span>
+      <span className={`text-right font-semibold tabular-nums text-bad ${first ? "text-lg" : "text-[15px]"}`}>10번 중 {n}번<small className="ml-1 text-sm font-normal text-sub">늦어요</small></span>
+      <span className="col-start-2 col-end-4 h-1 overflow-hidden rounded-sm bg-soft" aria-hidden="true">
+        <i className={`block h-full ${first ? "bg-bad" : "bg-dot"}`} style={{ width: `${n * 10}%` }} />
       </span>
     </div>
   );
