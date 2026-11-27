@@ -9,6 +9,7 @@ export type History = {
   period: { from: string; to: string };
   routes: Route[]; route_hour: RouteHour[]; route_airline: RouteAirline[]; route_flight: RouteFlight[];
   route_cause: Cause[]; cause_all: Cause[]; jeju_month: JejuMonth[];
+  airline_last?: { airline: string; last_day: string }[];
   route_arr_delay: { dep: string; arr: string; p50: number; p90: number; flights: number }[];
 };
 export type Leg = {

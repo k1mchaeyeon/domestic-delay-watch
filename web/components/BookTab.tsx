@@ -17,8 +17,12 @@ export function BookTab({ h }: { h: History }) {
   const hours = h.route_hour.filter(same).filter((x) => x.base >= 200 && x.h >= 6).sort((a, b) => a.h - b.h);
   const best = hours.reduce<RouteHour | null>((m, x) => (!m || rate(x) < rate(m) ? x : m), null);
   const worst = hours.reduce<RouteHour | null>((m, x) => (!m || rate(x) > rate(m) ? x : m), null);
-  const airlines = h.route_airline.filter(same).sort((a, b) => rate(b) - rate(a)).slice(0, 3);
-  const flights = h.route_flight.filter(same).sort((a, b) => a.rk - b.rk).slice(0, 3);
+  // 운항이 끝난 항공사(데이터 마지막 달에 운항 기록이 없는 곳)는 뺀다
+  const cut = `${h.period.to.slice(0, 6)}01`;
+  const active = new Set((h.airline_last ?? []).filter((a) => a.last_day >= cut).map((a) => a.airline));
+  const isActive = (name: string) => !h.airline_last || active.has(name);
+  const airlines = h.route_airline.filter(same).filter((a) => isActive(a.airline)).sort((a, b) => rate(b) - rate(a)).slice(0, 3);
+  const flights = h.route_flight.filter(same).filter((f) => isActive(f.airline)).sort((a, b) => a.rk - b.rk).slice(0, 3);
   const causes = h.route_cause.filter(same).filter((c) => CAUSE[c.cause_group]).sort((a, b) => b.late - a.late);
   const ctot = causes.reduce((s, c) => s + c.late, 0);
   const all = h.cause_all.filter((c) => CAUSE[c.cause_group]);
@@ -97,15 +101,16 @@ function Card({ children }: { children: React.ReactNode }) {
   return <section className="min-w-0 rounded-[20px] border border-line bg-card px-5 py-5">{children}</section>;
 }
 
-// 로고: public/logos/<코드>.svg (위키미디어 커먼즈 퍼블릭 도메인). 없는 항공사는 코드 배지
+// 로고: public/logos/<코드>.png (투명 배경). 어두운 로고는 다크 모드에서 밝게 바꾼다. 로고 없는 항공사는 코드 배지
 const LOGOS = new Set(["KE", "OZ", "7C", "LJ", "TW", "BX", "RS", "ZE", "RF", "WE", "XU"]);
+const DARK = new Set(["BX", "KE", "OZ", "RF", "WE", "XU", "ZE"]);
 function Badge({ name }: { name: string }) {
   const code = AIR_CODE[name];
   if (code && LOGOS.has(code))
     return (
-      <span className="mr-2 inline-grid h-[30px] w-16 flex-none place-items-center rounded-lg border border-line bg-white px-1.5 py-1 align-middle">
+      <span className="mr-2.5 inline-grid h-6 w-[72px] flex-none place-items-center justify-items-start align-middle">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`/logos/${code}.svg`} alt="" className="block max-h-full max-w-full" />
+        <img src={`/logos/${code}.png`} alt="" className={`block max-h-full max-w-full ${DARK.has(code) ? "dark:brightness-0 dark:invert-[.9]" : ""}`} />
       </span>
     );
   return <span className="mr-2 inline-grid size-7 place-items-center rounded-full bg-ink align-middle font-mono text-[11px] font-bold text-bg">{code ?? name.slice(0, 2)}</span>;
