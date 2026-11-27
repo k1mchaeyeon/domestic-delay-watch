@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* 기존 HTML 1차안과 같은 색 토큰. 상태색(제때·조금·많이)만 의미를 가진다 */
+:root {
+  --bg: #f4f6fa; --card: #ffffff; --ink: #0b1220; --sub: #5b6678; --line: #e4e8ef; --soft: #eef1f6;
+  --blue: #2563eb; --ok: #16a34a; --mid: #d97706; --bad: #dc2626; --dot: #d6dbe4; --map: #0b1220; --map-sub: #8390a8;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0b1220; --card: #121a2b; --ink: #eef1f6; --sub: #9aa5b8; --line: #222c40; --soft: #1a2335;
+    --blue: #6b93ff; --ok: #4ade80; --mid: #fbbf24; --bad: #f87171; --dot: #2a3550; --map: #070b14; }
+}
+@theme inline {
+  --color-bg: var(--bg); --color-card: var(--card); --color-ink: var(--ink); --color-sub: var(--sub); --color-line: var(--line);
+  --color-soft: var(--soft); --color-blue: var(--blue); --color-ok: var(--ok); --color-mid: var(--mid); --color-bad: var(--bad);
+  --color-dot: var(--dot); --color-map: var(--map); --color-map-sub: var(--map-sub);
+}
+body { background: var(--bg); color: var(--ink); word-break: keep-all; }
