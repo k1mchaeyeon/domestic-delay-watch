@@ -84,6 +84,8 @@ data["route_cause"] = num(q(f"""SELECT airport AS dep, other_airport AS arr, cau
 data["airline_all"] = num(q(f"""SELECT airline, count(*) AS flights, {BASEN} AS base, {LATE} AS late, {CANCEL} AS cancelled,
   round(avg(CASE WHEN use_delay THEN delay_min END),1) AS avg_delay
 {DEP} AND "date" >= '20250101' GROUP BY 1 HAVING count(*) >= 2000 ORDER BY 1.0*{LATE}/nullif({BASEN},0) DESC"""))
+# 운항이 끝난 항공사를 순위에서 빼려고 항공사별 마지막 운항일을 남긴다
+data["airline_last"] = num(q(f"""SELECT airline, max("date") AS last_day {DEP} GROUP BY 1"""))
 data["cause_all"] = num(q(f"""SELECT cause_group, count(*) AS late
 {DEP} AND "date" >= '20250101' AND use_delay AND is_late AND cause_group <> '' GROUP BY 1 ORDER BY 2 DESC"""))
 data["hour_all"] = num(q(f"""SELECT hour(sched_dt) AS h, count(*) AS flights, {BASEN} AS base, {LATE} AS late
