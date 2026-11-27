@@ -31,7 +31,7 @@ export function Tabs({ h }: { h: History }) {
           이 탭은 HTML 1차안(site/index.html)에서 옮기는 중이에요. 편 검색·지도·다른 날 비교를 같은 구조로 컴포넌트로 나눌 예정이에요.
         </section>
       )}
-      <footer className="mt-2 text-xs text-sub">항공사 로고는 각 사의 상표예요. 개인 학습용으로 위키미디어 커먼즈 파일을 썼어요.</footer>
+      <footer className="mt-2 text-xs text-sub">항공사 로고는 각 사의 상표예요. 개인 학습용으로 위키미디어 커먼즈·위키백과 파일을 썼어요.</footer>
     </>
   );
 }

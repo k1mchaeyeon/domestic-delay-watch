@@ -98,7 +98,7 @@ function Card({ children }: { children: React.ReactNode }) {
 }
 
 // 로고: public/logos/<코드>.svg (위키미디어 커먼즈 퍼블릭 도메인). 없는 항공사는 코드 배지
-const LOGOS = new Set(["KE", "OZ", "7C", "TW", "BX", "RS", "ZE", "RF", "WE", "XU"]);
+const LOGOS = new Set(["KE", "OZ", "7C", "LJ", "TW", "BX", "RS", "ZE", "RF", "WE", "XU"]);
 function Badge({ name }: { name: string }) {
   const code = AIR_CODE[name];
   if (code && LOGOS.has(code))
