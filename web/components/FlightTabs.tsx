@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Airports, History, Leg, Satellite } from "@/lib/types";
 import { clock, dayLabel, delayTone, delayWord, dur, hm, mins, shift } from "@/lib/words";
 import { Airline, Answer, Badge, Card, KpiTile, Src, Table, type Col } from "@/components/ui";
-import { SatMap } from "@/components/SatMap";
+import { LegMap } from "@/components/LegMap";
 import { CascadeGraph } from "@/components/CascadeGraph";
 import { BoardingPass } from "@/components/BoardingPass";
 import { FidsBoard } from "@/components/FidsBoard";
@@ -43,8 +43,8 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <Card title="내가 탈 비행기는 지금 어디쯤?">
-          <SatMap key={r.flight_no + day} legs={prev ? [prev, r] : [r]} cur={r} AP={AP} SAT={SAT} />
-          <Src>{KACS([day])} · 위치는 이착륙 시각으로 추정 · 위성 사진 Esri</Src>
+          <LegMap key={r.flight_no + day} legs={prev ? [prev, r] : [r]} cur={r} AP={AP} />
+          <Src>{KACS([day])} · 위치는 이착륙 시각으로 추정</Src>
         </Card>
         <Card title={`${r.flight_no} 어제 · 지난주 같은 요일`}>
           <div className="grid grid-cols-2 gap-3">{cmp("어제", shift(day, -1))}{cmp("지난주 같은 요일", shift(day, -7))}</div>

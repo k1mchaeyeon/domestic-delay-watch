@@ -1,7 +1,6 @@
 "use client";
 
 // 내 비행기 탑승권 카드: 노선(FROM → TO) · 출발/도착(예정은 취소선) · 상태 · 진행 막대 · 절취선 스텁
-// 디자인 출처: 팀 레포 assac-team-org/flight_dashboard 의 components/RealLive.tsx(RealPanel "BOARDING PASS").
 // 여기서는 실시간 ADS-B 칸을 빼고, 회전 테이블 기록(예정·실제 시각, 등록번호)만 쓰도록 바꿨다. 색은 이 화면 토큰을 쓴다.
 import type { Leg } from "@/lib/types";
 import { delayTone, delayWord, hm, mins } from "@/lib/words";

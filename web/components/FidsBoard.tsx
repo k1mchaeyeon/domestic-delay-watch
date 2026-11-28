@@ -1,7 +1,6 @@
 "use client";
 
 // 공항 출발 안내판(FIDS) 모양의 표: 시간 · 변경 · 항공사 · 편명 · 목적지 · 비고
-// 디자인 출처: 팀 레포 assac-team-org/flight_dashboard 의 components/flights/FidsBoard.tsx.
 // 실시간 시계·게이트·탑승 상태는 빼고, 회전 테이블 기록(예정·실제 출발, 지연 분)만 쓰도록 줄였다.
 import type { Leg } from "@/lib/types";
 import { AIR_CODE, hm } from "@/lib/words";
