@@ -21,3 +21,12 @@ export type Leg = {
 };
 export type Airports = Record<string, { ko: string; lat: number; lon: number }>;
 export type Satellite = { bounds: { west: number; east: number; south: number; north: number }; size: [number, number]; credit: string; img: string };
+
+// public/data/questions.json (질문별 분석 페이지, 회전 테이블 11/23~27 + 포털 2025.1~2026.10)
+export type Questions = {
+  period: { from: string; to: string }; flights: number; late: number; origin_mix: Record<string, number>;
+  a_band: { band: string; n: number; prop: number }[]; a_airport: { ap: string; n: number; prop: number }[];
+  b_cells: { ap: string; band: string; n: number }[];
+  c_len: { hops: number; n: number }[]; c_slack: { bucket: string; n: number; ontime: number }[]; turn_median: number;
+  od_period: { from: string; to: string }; od: { dep: string; arr: string; flights: number; base: number; late: number }[];
+};

@@ -2,11 +2,12 @@
 
 // 앱 셸: 왼쪽 사이드바(여정 4단계 + 데이터 기준) + 위쪽 헤더(페이지 제목 + 필터 한 줄) + 본문(최대 1440px)
 import { useEffect, useMemo, useState } from "react";
-import type { Airports, History, Leg, Satellite } from "@/lib/types";
+import type { Airports, History, Leg, Questions, Satellite } from "@/lib/types";
 import { dayLabel, hm, iso, ymd } from "@/lib/words";
 import { DateInput, Select, TextInput } from "@/components/ui";
 import { BookTab } from "@/components/BookTab";
 import { AirportTab, ArriveTab, LeaveTab } from "@/components/FlightTabs";
+import { BlamePage, ChainBreakPage, OriginPage } from "@/components/QuestionPages";
 
 const STEPS = [
   { id: "book", label: "예약할 때", q: "몇 시 비행기가 덜 늦을까" },
@@ -14,7 +15,13 @@ const STEPS = [
   { id: "airport", label: "공항에서", q: "왜 늦나, 얼마나 기다리나" },
   { id: "arrive", label: "도착", q: "언제 나오나" },
 ] as const;
-type StepId = (typeof STEPS)[number]["id"];
+// 질문별 분석(한 질문 = 한 페이지)
+const QSTEPS = [
+  { id: "q-chain", label: "연쇄는 어디서 끊기나", q: "준비 시간과 지연 전파" },
+  { id: "q-blame", label: "앞 비행기 탓인가", q: "시간대·공항별 비율" },
+  { id: "q-origin", label: "어디서 시작되나", q: "공항 × 시간대" },
+] as const;
+type StepId = (typeof STEPS)[number]["id"] | (typeof QSTEPS)[number]["id"];
 
 export function Tabs({ h }: { h: History }) {
   const [step, setStep] = useState<StepId>("book");
@@ -29,6 +36,9 @@ export function Tabs({ h }: { h: History }) {
   const [DAYS, setDays] = useState<string[]>([]);
   const [ROT, setRot] = useState<Record<string, Leg[]>>({});
   const [SAT, setSat] = useState<Satellite | null>(null);
+  const [Q, setQ] = useState<Questions | null>(null);
+  useEffect(() => { fetch("/data/questions.json").then((r) => r.json()).then(setQ).catch(() => setQ(null)); }, []);
+  const isQ = step.startsWith("q-");
   const [day, setDay] = useState("");
   const [fno, setFno] = useState("");
   useEffect(() => {
@@ -47,7 +57,7 @@ export function Tabs({ h }: { h: History }) {
   const goDay = (d: string, f?: string) => { if (!ROT[d]) return; setDay(d); if (f) setFno(f); };
   const flightNos = day && ROT[day] ? [...new Set(ROT[day].map((r) => r.flight_no))].sort() : [];
   const ko = (c: string) => AP?.[c]?.ko ?? c;
-  const meta = STEPS.find((s) => s.id === step)!;
+  const meta = [...STEPS, ...QSTEPS].find((s) => s.id === step)!;
 
   return (
     <div className="min-h-screen md:grid md:grid-cols-[220px_minmax(0,1fr)]">
@@ -58,6 +68,16 @@ export function Tabs({ h }: { h: History }) {
             <button key={s.id} onClick={() => setStep(s.id)} aria-current={step === s.id ? "page" : undefined}
               className={`flex min-w-max items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-left text-[13px] transition-colors md:min-w-0 ${step === s.id ? "bg-subtle font-semibold text-ink" : "text-ink-2 hover:bg-subtle hover:text-ink"}`}>
               <span className={`num grid size-5 place-items-center rounded-[4px] border text-[11px] ${step === s.id ? "border-accent bg-accent text-accent-ink" : "border-line-strong text-ink-3"}`}>{i + 1}</span>
+              <span className="flex flex-col"><span>{s.label}</span><span className="hidden text-xs font-normal text-ink-3 md:block">{s.q}</span></span>
+            </button>
+          ))}
+        </nav>
+        <div className="mt-3 hidden px-4 pb-1 text-[11px] font-medium text-ink-3 md:block">질문별 분석</div>
+        <nav aria-label="질문별 분석" className="flex gap-1 overflow-x-auto px-2 pb-2 md:flex-col md:pb-0">
+          {QSTEPS.map((s) => (
+            <button key={s.id} onClick={() => setStep(s.id)} aria-current={step === s.id ? "page" : undefined}
+              className={`flex min-w-max items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-left text-[13px] transition-colors md:min-w-0 ${step === s.id ? "bg-subtle font-semibold text-ink" : "text-ink-2 hover:bg-subtle hover:text-ink"}`}>
+              <span className={`grid size-5 place-items-center rounded-[4px] border text-[11px] ${step === s.id ? "border-accent bg-accent text-accent-ink" : "border-line-strong text-ink-3"}`}>Q</span>
               <span className="flex flex-col"><span>{s.label}</span><span className="hidden text-xs font-normal text-ink-3 md:block">{s.q}</span></span>
             </button>
           ))}
@@ -75,12 +95,13 @@ export function Tabs({ h }: { h: History }) {
             <div className="min-w-0">
               <h1 className="text-[15px] font-semibold leading-tight">{meta.label}</h1>
               <p className="num mt-0.5 truncate text-xs text-ink-2">
-                {step === "book" ? `${dep} → ${arr} 노선의 지난 운항 기록`
+                {isQ ? "국내선 전체 · 회전 테이블과 과거 운항 실적으로 답한 질문"
+                  : step === "book" ? `${dep} → ${arr} 노선의 지난 운항 기록`
                   : cur ? `${cur.flight_no} · ${ko(cur.dep_airport)} → ${ko(cur.arr_airport)} · ${dayLabel(day)} ${hm(cur.dep_sched_at)} 출발 예정` : "편명과 비행일을 골라 주세요"}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {step === "book" ? (
+              {isQ ? null : step === "book" ? (
                 <>
                   <Select label="출발" value={dep} options={deps} onChange={setDep} />
                   <span aria-hidden="true" className="text-ink-3">→</span>
@@ -98,9 +119,13 @@ export function Tabs({ h }: { h: History }) {
         </header>
 
         <main className="mx-auto max-w-[1440px] p-4 md:p-6">
+          {step === "q-chain" && Q && <ChainBreakPage q={Q} />}
+          {step === "q-blame" && Q && <BlamePage q={Q} AP={AP} />}
+          {step === "q-origin" && Q && <OriginPage q={Q} AP={AP} />}
+          {isQ && !Q && <p className="text-ink-2">질문별 분석 자료를 불러오는 중이에요</p>}
           {step === "book" && <BookTab h={h} dep={dep} arr={arr} />}
-          {step !== "book" && (!AP || !cur) && <p className="text-ink-2">{AP && fno ? `${dayLabel(day)}에는 ${fno}편 기록이 없어요` : "비행기별 기록을 불러오는 중이에요"}</p>}
-          {step !== "book" && AP && cur && (
+          {!isQ && step !== "book" && (!AP || !cur) && <p className="text-ink-2">{AP && fno ? `${dayLabel(day)}에는 ${fno}편 기록이 없어요` : "비행기별 기록을 불러오는 중이에요"}</p>}
+          {!isQ && step !== "book" && AP && cur && (
             <>
               {step === "leave" && <LeaveTab h={h} AP={AP} ROT={ROT} DAYS={DAYS} day={day} cur={cur} goDay={goDay} SAT={SAT} />}
               {step === "airport" && <AirportTab h={h} AP={AP} ROT={ROT} DAYS={DAYS} day={day} cur={cur} goDay={goDay} SAT={SAT} />}

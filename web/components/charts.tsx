@@ -4,12 +4,13 @@
 // 회색 막대 + 강조는 의미 있는 1~2개(제일 덜/제일 많이), y축 눈금·범례·마우스 올리면 수치
 import { useEffect, useRef, useState } from "react";
 
-export type Bar = { key: string | number; label: string; value: number; tip: string; tone?: "ok" | "bad" | "accent" };
+export type Bar = { key: string | number; label: string; value: number; tip: string; tone?: "ok" | "bad" | "accent"; sub?: string };
 
 const FILL = { ok: "var(--ok)", bad: "var(--bad)", accent: "var(--accent)" } as const;
 
-export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryIn = 1, legend }: {
+export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryIn = 1, legend, showValues = false, max: maxIn }: {
   bars: Bar[]; unit?: string; height?: number; tickEvery?: number; legend?: { tone: keyof typeof FILL; label: string }[];
+  /** 막대 위에 값 표시 */ showValues?: boolean; /** y축 최댓값 고정(예: 100%) */ max?: number;
 }) {
   const [hover, setHover] = useState<number | null>(null);
   // 그려지는 실제 폭을 재서 viewBox에 쓴다(글자가 화면 크기 따라 커지거나 작아지지 않게)
@@ -22,15 +23,17 @@ export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryI
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const H = height, pl = 40, pr = 8, pt = 12, pb = 28;
+  const hasSub = bars.some((b) => b.sub);
+  const H = height, pl = 40, pr = 8, pt = showValues ? 22 : 12, pb = hasSub ? 42 : 28;
   const raw = Math.max(...bars.map((b) => b.value), 0);
   const step = niceStep(raw / 4);
-  const max = Math.max(step, Math.ceil(raw / step) * step);
+  const max = maxIn ?? Math.max(step, Math.ceil(raw / step) * step);
   const ticks = Array.from({ length: Math.round(max / step) + 1 }, (_, i) => i * step);
   const bw = (W - pl - pr) / Math.max(1, bars.length);
   const tickEvery = bw < 34 ? Math.max(tickEveryIn, Math.ceil(34 / bw)) : tickEveryIn;
   const y = (v: number) => pt + (H - pt - pb) * (1 - v / max);
   const fmt = (v: number) => (step < 1 ? v.toFixed(1) : String(Math.round(v)));
+  const fmtV = (v: number) => String(Math.round(v));
   return (
     <div className="relative" ref={box}>
       <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full" role="img" aria-label={bars.map((b) => b.tip).join(", ")}>
@@ -47,7 +50,9 @@ export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryI
             <g key={b.key} onPointerEnter={() => setHover(i)} onPointerLeave={() => setHover(null)}>
               <rect x={pl + i * bw} y={pt} width={bw} height={H - pt - pb} fill="transparent" />
               <path d={roundTop(x, top, w, H - pb - top, Math.min(3, w / 2))} fill={fill} />
-              {i % tickEvery === 0 && <text x={x + w / 2} y={H - 9} textAnchor="middle" fontSize={11} fill="var(--ink-3)">{b.label}</text>}
+              {i % tickEvery === 0 && <text x={x + w / 2} y={hasSub ? H - 23 : H - 9} textAnchor="middle" fontSize={11} fill="var(--ink-3)">{b.label}</text>}
+              {b.sub && <text x={x + w / 2} y={H - 8} textAnchor="middle" fontSize={10} fill="var(--ink-3)" className="num">{b.sub}</text>}
+              {showValues && <text x={x + w / 2} y={top - 6} textAnchor="middle" fontSize={12} fontWeight={600} fill="var(--ink)" className="num">{fmtV(b.value)}{unit}</text>}
             </g>
           );
         })}
