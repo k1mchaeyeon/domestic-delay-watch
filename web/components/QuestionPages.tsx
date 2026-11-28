@@ -11,7 +11,7 @@ const pct = (a: number, b: number) => (b ? Math.round((100 * a) / b) : 0);
 const BANDS = ["~08시", "09~11시", "12~14시", "15~17시", "18시~"];
 const SMALL = 20; // 이보다 적으면 "적음"
 const md = (s: string) => `${+s.slice(4, 6)}/${+s.slice(6)}`;
-const KAC = (q: Questions) => `한국공항공사 API · ${md(q.period.from)}~${md(q.period.to)} · 국내선 ${q.flights.toLocaleString()}편 · 15분 초과 지연`;
+const KAC = (q: Questions) => `한국공항공사 API · ${md(q.period.from)}~${md(q.period.to)} · 국내선 ${q.flights.toLocaleString()}편 · 15분 초과 지연 · 11/18~22는 하루 1회 수집본(1분 변경 기록 없음)`;
 const XY = ({ x, y, m }: { x: string; y: string; m?: string }) => <InfoTip><b className="font-medium text-ink">X</b> {x}<br /><b className="font-medium text-ink">Y</b> {y}{m && <><br />{m}</>}</InfoTip>;
 
 /** 열지도(QuickSight Heat map): 가장 큰 칸만 진하게, 나머지는 옅게 */

@@ -20,11 +20,12 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
   const legs = legsOf(ROT[day], r), i = legs.indexOf(r), prev = i > 0 ? legs[i - 1] : null;
   const carried = (r.carried_delay_min ?? 0) > 0 && ["propagated", "external"].includes(r.delay_origin_type);
   const on = (dd: string) => ROT[dd]?.find((x) => x.flight_no === r.flight_no && x.dep_airport === r.dep_airport);
-  const seen = DAYS.map(on).filter((x): x is Leg => !!x && x.dep_delay_gate_est_min != null);
-  const lateN = seen.filter((x) => (x.dep_delay_gate_est_min ?? 0) > 15).length;
+  // 같은 편명은 매일 같은 번호로 뜬다 → 어제와 지난주 같은 요일만 비교(요일마다 경향이 달라서)
   const cmp = (label: string, dd: string) => {
     const x = on(dd), m = x?.dep_delay_gate_est_min;
-    return <KpiTile key={label} label={`${label} · ${ROT[dd] ? dayLabel(dd) : "기록 없음"}`} value={!ROT[dd] ? "-" : !x ? "운항 없음" : delayWord(m)} tone={x ? delayTone(m) : undefined} />;
+    const ok = m != null;
+    return <KpiTile key={label} label={`${label} · ${dayLabel(dd)}`} value={ok ? `${Math.max(0, Math.round(m!))}` : "기록 없음"} unit={ok ? "분 늦음" : undefined}
+      tone={ok ? delayTone(m) : undefined} note={ok ? (m! <= 15 ? "제때" : "지연") : undefined} />;
   };
 
   return (
@@ -48,15 +49,9 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
           <SatMap key={r.flight_no + day} legs={prev ? [prev, r] : [r]} cur={r} AP={AP} SAT={SAT} />
           <Src>{KACS([day])} · 위치는 이착륙 시각으로 추정 · 위성 사진 Esri</Src>
         </Card>
-        <Card title={`${r.flight_no}, 다른 날은 어땠어요?`} right={<span>최근 {seen.length}번 운항 중 {lateN}번 늦음</span>}>
-          <div className="mb-4 grid grid-cols-2 gap-3">{cmp("하루 전", shift(day, -1))}{cmp("일주일 전 같은 요일", shift(day, -7))}</div>
-          <Table<string>
-            cols={[
-              { key: "d", label: "날짜", render: (dd) => dayLabel(dd) },
-              { key: "s", label: "출발", align: "right", render: (dd) => { const x = on(dd); return x ? <Badge tone={delayTone(x.dep_delay_gate_est_min)}>{delayWord(x.dep_delay_gate_est_min)}</Badge> : <span className="text-ink-3">운항 없음</span>; } },
-            ]}
-            rows={[...DAYS].reverse()} rowKey={(dd) => dd} selected={(dd) => dd === day} onRow={(dd) => on(dd) && goDay(dd, r.flight_no)} />
-          <Src>{KACS(DAYS)}</Src>
+        <Card title={`${r.flight_no} 어제 · 지난주 같은 요일`}>
+          <div className="grid grid-cols-2 gap-3">{cmp("어제", shift(day, -1))}{cmp("지난주 같은 요일", shift(day, -7))}</div>
+          <Src>{KACS(DAYS)} · 같은 편명·출발 공항 · 데이터가 없는 날은 기록 없음</Src>
         </Card>
       </div>
 
