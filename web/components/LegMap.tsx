@@ -3,7 +3,7 @@
 // 지도(MapLibre) 위에 공항 15곳, 앞 편 → 내 편 경로, 내 비행기의 추정 위치를 그린다.
 // 위치는 기록된 이륙·착륙 시각 사이를 곡선으로 나눈 추정(실시간 위치 아님). 슬라이더로 시각을 바꿔 본다.
 // 바탕 지도: CARTO Basemaps(키 없음, 출처 표기 필요)
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import MapGL, { AttributionControl, Layer, Marker, NavigationControl, Source } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Airports, Leg } from "@/lib/types";
@@ -29,7 +29,9 @@ const ctrl = (a: P, b: P): P => [(a[0] + b[0]) / 2 + (b[1] - a[1]) * 0.18, (a[1]
 const bez = (a: P, c: P, b: P, u: number): P => { const q = 1 - u; return [q * q * a[0] + 2 * q * u * c[0] + u * u * b[0], q * q * a[1] + 2 * q * u * c[1] + u * u * b[1]]; };
 const bearing = (from: P, to: P) => (Math.atan2(to[0] - from[0], to[1] - from[1]) * 180) / Math.PI;
 
-export function LegMap({ legs, cur, AP }: { legs: Leg[]; cur: Leg; AP: Airports }) {
+/** pass: 비행기·공항을 누르면 지도 위 왼쪽 패널로 여는 내용(탑승권) */
+export function LegMap({ legs, cur, AP, pass }: { legs: Leg[]; cur: Leg; AP: Airports; pass?: (close: () => void) => ReactNode }) {
+  const [open, setOpen] = useState(false);
   const t0 = (mins(legs[0].dep_actual_at || legs[0].dep_sched_at) ?? 0) - 20;
   const t1 = (mins(cur.arr_actual_at || cur.arr_sched_at) ?? 0) + 10;
   const [tNow, setT] = useState(() => Math.max(t0, (mins(cur.dep_sched_at) ?? 0) - 60));
@@ -79,8 +81,7 @@ export function LegMap({ legs, cur, AP }: { legs: Leg[]; cur: Leg; AP: Airports 
 
   return (
     <div>
-      <div className="mb-2 text-[13px]"><span className="num font-semibold">{clock(tNow)}</span> <span className="text-ink-2">{say}</span></div>
-      <div className="h-[420px] overflow-hidden rounded-[6px] border border-line">
+      <div className="relative h-[70vh] min-h-[460px] overflow-hidden rounded-[8px] border border-line">
         <MapGL key={`${cur.flight_no}-${cur.flight_date}`} initialViewState={{ bounds, fitBoundsOptions: { padding: 30 } }} mapStyle={dark ? STYLE.dark : STYLE.light}
           attributionControl={false} dragRotate={false} scrollZoom={false} style={{ width: "100%", height: "100%" }}>
           <AttributionControl compact position="bottom-right" />
@@ -90,19 +91,27 @@ export function LegMap({ legs, cur, AP }: { legs: Leg[]; cur: Leg; AP: Airports 
             <Layer id="route-me" type="line" filter={["==", ["get", "me"], 1]} paint={{ "line-color": "#2563eb", "line-width": 3 }} layout={{ "line-cap": "round" }} />
           </Source>
           {Object.entries(AP).map(([c, a]) => (
-            <Marker key={c} longitude={a.lon} latitude={a.lat} anchor="left">
-              <div className="flex items-center gap-1">
+            <Marker key={c} longitude={a.lon} latitude={a.lat} anchor="left" onClick={(e) => { e.originalEvent.stopPropagation(); if (c === cur.dep_airport || c === cur.arr_airport) setOpen(true); }}>
+              <div className={`flex items-center gap-1 ${c === cur.dep_airport || c === cur.arr_airport ? "cursor-pointer" : ""}`}>
                 <span className="size-2 rounded-full bg-ink ring-2 ring-surface" />
                 <span className="text-[11px] font-semibold text-ink [text-shadow:0_0_3px_var(--surface)]">{a.ko}</span>
               </div>
             </Marker>
           ))}
           {p && (
-            <Marker longitude={p[0]} latitude={p[1]} anchor="center" rotation={head} rotationAlignment="map">
-              <PlaneIcon />
+            <Marker longitude={p[0]} latitude={p[1]} anchor="center" rotation={head} rotationAlignment="map" onClick={(e) => { e.originalEvent.stopPropagation(); setOpen(true); }}>
+              <button aria-label="탑승권 열기" className="cursor-pointer transition hover:scale-125"><PlaneIcon size={30} /></button>
             </Marker>
           )}
         </MapGL>
+        {/* 지도 위 오버레이: 지금 시각·상태 + 탑승권 패널 */}
+        <div className="pointer-events-none absolute left-3 top-3 max-w-[calc(100%-70px)] rounded-[6px] border border-line bg-surface/90 px-3 py-1.5 text-[13px] backdrop-blur-sm">
+          <span className="num font-semibold">{clock(tNow)}</span> <span className="text-ink-2">{say}</span>
+          {pass && !open && <span className="block text-[11px] text-ink-3">비행기를 누르면 탑승권</span>}
+        </div>
+        {pass && open && (
+          <div className="absolute inset-x-3 bottom-3 top-3 z-10 overflow-y-auto sm:right-auto sm:w-[360px]">{pass(() => setOpen(false))}</div>
+        )}
       </div>
       <div className="mt-2 flex items-center gap-3 text-xs text-ink-3">
         <span className="num">{clock(t0)}</span>

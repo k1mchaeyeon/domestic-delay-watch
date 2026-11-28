@@ -39,19 +39,17 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
           : <><span className={d > 45 ? "text-bad" : "text-warn"}>{dur(d)}쯤</span> 늦게 떠요</>}
       </Answer>
 
-      <BoardingPass r={r} ko={ko} />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <Card title="내가 탈 비행기는 지금 어디쯤?">
-          <LegMap key={r.flight_no + day} legs={prev ? [prev, r] : [r]} cur={r} AP={AP} />
+      <Card title="내가 탈 비행기는 지금 어디쯤?">
+          <LegMap key={r.flight_no + day} legs={prev ? [prev, r] : [r]} cur={r} AP={AP} pass={(close) => <BoardingPass r={r} ko={ko} compact onClose={close} />} />
           <Src>{KACS([day])} · 위치는 이착륙 시각으로 추정</Src>
-        </Card>
+      </Card>
+
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <Card title={`${r.flight_no} 어제 · 지난주 같은 요일`}>
           <div className="grid grid-cols-2 gap-3">{cmp("어제", shift(day, -1))}{cmp("지난주 같은 요일", shift(day, -7))}</div>
           <Src>{KACS(DAYS)} · 같은 편명·출발 공항 · 데이터가 없는 날은 기록 없음</Src>
         </Card>
-      </div>
-
       <Card title="이 비행기의 오늘 일정">
         <Table<Leg> cols={[
           { key: "t", label: "출발 예정", width: "96px", render: (l) => hm(l.dep_sched_at) },
@@ -61,6 +59,7 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
         ]} rows={legs} rowKey={(l) => l.flight_no + l.dep_sched_at} selected={(l) => l === r} />
         <Src>{KACS([day])} · {r.reg_no}</Src>
       </Card>
+      </div>
 
       <Domino legs={legs} r={r} ko={ko} />
     </div>

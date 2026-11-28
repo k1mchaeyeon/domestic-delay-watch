@@ -25,7 +25,7 @@ function Field({ k, v, strike, tone }: { k: string; v: string; strike?: string; 
   );
 }
 
-export function BoardingPass({ r, ko }: { r: Leg; ko: (c: string | null) => string }) {
+export function BoardingPass({ r, ko, compact = false, onClose }: { r: Leg; ko: (c: string | null) => string; compact?: boolean; onClose?: () => void }) {
   const d = r.dep_delay_gate_est_min, tone = delayTone(d);
   const status = d == null ? "기록 없음" : delayWord(d);
   // 진행: 착륙했으면 100%, 이륙만 했으면 50%, 아직이면 0% (기록 기준, 실시간 위치 아님)
@@ -33,12 +33,14 @@ export function BoardingPass({ r, ko }: { r: Leg; ko: (c: string | null) => stri
   const block = (mins(r.arr_actual_at || r.arr_sched_at) ?? 0) - (mins(r.dep_actual_at || r.dep_sched_at) ?? 0);
   const late = (a: string | null, s: string) => (a && hm(a) !== hm(s) ? hm(s) : undefined);
   return (
-    <section className="overflow-hidden rounded-[8px] border border-line bg-surface">
+    <section className={`overflow-hidden rounded-[8px] border border-line bg-surface ${compact ? "shadow-xl" : ""}`}>
       <div className="flex items-center justify-between bg-accent px-4 py-2 text-accent-ink">
         <span className="flex items-center gap-2 text-[13px] font-bold tracking-wider">BOARDING PASS <Plane className="size-4" /></span>
-        <span className="truncate pl-2 text-xs font-medium opacity-90">{r.airline_name}</span>
+        <span className="flex items-center gap-2 truncate pl-2 text-xs font-medium opacity-90">{r.airline_name}
+          {onClose && <button onClick={onClose} aria-label="탑승권 닫기" className="grid size-6 place-items-center rounded-full bg-black/20 text-sm leading-none hover:bg-black/40">×</button>}
+        </span>
       </div>
-      <div className="grid gap-0 md:grid-cols-[minmax(0,1fr)_auto_220px]">
+      <div className={compact ? "grid" : "grid gap-0 md:grid-cols-[minmax(0,1fr)_auto_220px]"}>
         {/* 본권 */}
         <div className="px-5 py-4">
           <div className="flex items-center justify-between gap-4">
@@ -63,7 +65,7 @@ export function BoardingPass({ r, ko }: { r: Leg; ko: (c: string | null) => stri
               <div className="mt-1 text-xs text-ink-2">{ko(r.arr_airport)}</div>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
+          <div className={`mt-4 grid gap-3 ${compact ? "grid-cols-2" : "grid-cols-3 sm:grid-cols-4"}`}>
             <Field k="FLIGHT" v={r.flight_no} />
             <Field k="DATE" v={`${+r.flight_date.slice(5, 7)}월 ${+r.flight_date.slice(8, 10)}일`} />
             <Field k="DEPART" v={hm(r.dep_actual_at) || hm(r.dep_sched_at)} strike={late(r.dep_actual_at, r.dep_sched_at)} tone={tone} />
@@ -71,13 +73,13 @@ export function BoardingPass({ r, ko }: { r: Leg; ko: (c: string | null) => stri
           </div>
         </div>
         {/* 절취선 */}
-        <div className="relative hidden w-0 md:block">
+        <div className={`relative w-0 ${compact ? "hidden" : "hidden md:block"}`}>
           <span className="absolute -left-3 -top-3 size-6 rounded-full border border-line bg-bg" />
           <span className="absolute -bottom-3 -left-3 size-6 rounded-full border border-line bg-bg" />
           <span className="absolute bottom-4 left-0 top-4 border-l-2 border-dashed border-line-strong" />
         </div>
         {/* 스텁 */}
-        <div className="flex flex-col justify-between gap-3 border-t border-dashed border-line-strong px-5 py-4 md:border-t-0">
+        <div className={`flex flex-col justify-between gap-3 border-t border-dashed border-line-strong px-5 py-4 ${compact ? "" : "md:border-t-0"}`}>
           <div>
             <div className="text-[10px] font-semibold tracking-wider text-ink-3">STATUS</div>
             <span className={`mt-1 inline-block rounded-[4px] px-2 py-0.5 text-xs font-bold text-white ${tone ? TONE_BG[tone] : "bg-ink-3"}`}>{status}</span>
