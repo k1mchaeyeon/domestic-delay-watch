@@ -57,9 +57,9 @@ export function SatMap({ legs, cur, AP, SAT }: { legs: Leg[]; cur: Leg; AP: Airp
 
   return (
     <div>
-      <div className="mb-2 flex items-baseline justify-between gap-3 text-[13px]">
+      <div className="mb-2 flex items-baseline justify-between gap-3 text-[15px]">
         <span><span className="num font-semibold">{clock(tNow)}</span> <span className="text-ink-2">{say}</span></span>
-        {SAT && <span className="text-[11px] text-ink-3">{SAT.credit}</span>}
+        {SAT && <span className="text-[12px] text-ink-3">{SAT.credit}</span>}
       </div>
       <div className="overflow-hidden rounded-[6px] border border-line bg-[#13283a]">
         <svg viewBox={`${x0} ${y0} ${x1 - x0} ${y1 - y0}`} className="mx-auto block h-auto max-h-[480px] w-full" role="img" aria-label="위성 지도 위 공항과 비행기 위치">
@@ -83,7 +83,7 @@ export function SatMap({ legs, cur, AP, SAT }: { legs: Leg[]; cur: Leg; AP: Airp
           )}
         </svg>
       </div>
-      <div className="mt-2 flex items-center gap-3 text-xs text-ink-3">
+      <div className="mt-2 flex items-center gap-3 text-sm text-ink-3">
         <span className="num">{clock(t0)}</span>
         <input type="range" min={t0} max={t1} value={tNow} onChange={(e) => setT(+e.target.value)} aria-label="시각 바꿔 보기" className="flex-1" />
         <span className="num">{clock(t1)}</span>

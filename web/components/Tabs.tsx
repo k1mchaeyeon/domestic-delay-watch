@@ -60,29 +60,29 @@ export function Tabs({ h }: { h: History }) {
   const meta = [...STEPS, ...QSTEPS].find((s) => s.id === step)!;
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[220px_minmax(0,1fr)]">
+    <div className="min-h-screen md:grid md:grid-cols-[260px_minmax(0,1fr)]">
       <aside className="border-b border-line bg-surface md:sticky md:top-0 md:flex md:h-screen md:flex-col md:border-b-0 md:border-r">
         <div className="flex h-14 items-center px-4 text-[15px] font-semibold">국내선 지연 워치</div>
         <nav aria-label="여행 단계" className="flex gap-1 overflow-x-auto px-2 pb-2 md:flex-col md:pb-0">
           {STEPS.map((s, i) => (
             <button key={s.id} onClick={() => setStep(s.id)} aria-current={step === s.id ? "page" : undefined}
-              className={`flex min-w-max items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-left text-[13px] transition-colors md:min-w-0 ${step === s.id ? "bg-subtle font-semibold text-ink" : "text-ink-2 hover:bg-subtle hover:text-ink"}`}>
-              <span className={`num grid size-5 place-items-center rounded-[4px] border text-[11px] ${step === s.id ? "border-accent bg-accent text-accent-ink" : "border-line-strong text-ink-3"}`}>{i + 1}</span>
-              <span className="flex flex-col"><span>{s.label}</span><span className="hidden text-xs font-normal text-ink-3 md:block">{s.q}</span></span>
+              className={`flex min-w-max items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-left text-[15px] transition-colors md:min-w-0 ${step === s.id ? "bg-subtle font-semibold text-ink" : "text-ink-2 hover:bg-subtle hover:text-ink"}`}>
+              <span className={`num grid size-5 place-items-center rounded-[4px] border text-[12px] ${step === s.id ? "border-accent bg-accent text-accent-ink" : "border-line-strong text-ink-3"}`}>{i + 1}</span>
+              <span className="flex flex-col"><span>{s.label}</span><span className="hidden text-sm font-normal text-ink-3 md:block">{s.q}</span></span>
             </button>
           ))}
         </nav>
-        <div className="mt-3 hidden px-4 pb-1 text-[11px] font-medium text-ink-3 md:block">질문별 분석</div>
+        <div className="mt-3 hidden px-4 pb-1 text-[12px] font-medium text-ink-3 md:block">질문별 분석</div>
         <nav aria-label="질문별 분석" className="flex gap-1 overflow-x-auto px-2 pb-2 md:flex-col md:pb-0">
           {QSTEPS.map((s) => (
             <button key={s.id} onClick={() => setStep(s.id)} aria-current={step === s.id ? "page" : undefined}
-              className={`flex min-w-max items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-left text-[13px] transition-colors md:min-w-0 ${step === s.id ? "bg-subtle font-semibold text-ink" : "text-ink-2 hover:bg-subtle hover:text-ink"}`}>
-              <span className={`grid size-5 place-items-center rounded-[4px] border text-[11px] ${step === s.id ? "border-accent bg-accent text-accent-ink" : "border-line-strong text-ink-3"}`}>Q</span>
-              <span className="flex flex-col"><span>{s.label}</span><span className="hidden text-xs font-normal text-ink-3 md:block">{s.q}</span></span>
+              className={`flex min-w-max items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-left text-[15px] transition-colors md:min-w-0 ${step === s.id ? "bg-subtle font-semibold text-ink" : "text-ink-2 hover:bg-subtle hover:text-ink"}`}>
+              <span className={`grid size-5 place-items-center rounded-[4px] border text-[12px] ${step === s.id ? "border-accent bg-accent text-accent-ink" : "border-line-strong text-ink-3"}`}>Q</span>
+              <span className="flex flex-col"><span>{s.label}</span><span className="hidden text-sm font-normal text-ink-3 md:block">{s.q}</span></span>
             </button>
           ))}
         </nav>
-        <div className="mt-auto hidden border-t border-line px-4 py-3 text-xs leading-5 text-ink-3 md:block">
+        <div className="mt-auto hidden border-t border-line px-4 py-3 text-sm leading-5 text-ink-3 md:block">
           <div>운항 기록 {h.period.from.slice(0, 4)}.{+h.period.from.slice(4, 6)}~{h.period.to.slice(0, 4)}.{+h.period.to.slice(4, 6)}</div>
           {DAYS.length > 0 && <div>비행기별 기록 {dayLabel(DAYS[0])}~{dayLabel(DAYS[DAYS.length - 1])}</div>}
         </div>
@@ -93,8 +93,8 @@ export function Tabs({ h }: { h: History }) {
           {/* 제목·요약(왼쪽 두 줄)과 필터(오른쪽)를 나눠, 한 줄에 몰아 넣지 않는다 */}
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
             <div className="min-w-0">
-              <h1 className="text-[15px] font-semibold leading-tight">{meta.label}</h1>
-              <p className="num mt-0.5 truncate text-xs text-ink-2">
+              <h1 className="text-lg font-semibold leading-tight">{meta.label}</h1>
+              <p className="num mt-0.5 truncate text-sm text-ink-2">
                 {isQ ? "국내선 전체 · 회전 테이블과 과거 운항 실적으로 답한 질문"
                   : step === "book" ? `${dep} → ${arr} 노선의 지난 운항 기록`
                   : cur ? `${cur.flight_no} · ${ko(cur.dep_airport)} → ${ko(cur.arr_airport)} · ${dayLabel(day)} ${hm(cur.dep_sched_at)} 출발 예정` : "편명과 비행일을 골라 주세요"}

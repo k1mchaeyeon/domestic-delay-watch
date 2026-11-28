@@ -8,12 +8,12 @@ export function Card({ title, right, children, className = "" }: { title?: React
   return (
     <section className={`min-w-0 rounded-[8px] border border-line bg-surface ${className}`}>
       {(title || right) && (
-        <header className="flex min-h-11 items-center justify-between gap-3 border-b border-line px-4 py-2.5">
-          <h2 className="text-[13px] font-semibold text-ink">{title}</h2>
-          {right && <div className="flex items-center gap-2 text-xs text-ink-2">{right}</div>}
+        <header className="flex min-h-14 items-center justify-between gap-3 border-b border-line px-5 py-3">
+          <h2 className="text-[17px] font-semibold text-ink">{title}</h2>
+          {right && <div className="flex items-center gap-2 text-sm text-ink-2">{right}</div>}
         </header>
       )}
-      <div className="p-4">{children}</div>
+      <div className="p-5">{children}</div>
     </section>
   );
 }
@@ -22,22 +22,22 @@ export function Card({ title, right, children, className = "" }: { title?: React
 export function Answer({ q, children, sub }: { q: string; children: ReactNode; sub?: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-[13px] text-ink-2">{q}</p>
-      <p className="text-xl font-semibold leading-snug tracking-[-0.01em] text-ink [text-wrap:balance]">{children}</p>
-      {sub && <p className="text-[13px] text-ink-2">{sub}</p>}
+      <p className="text-[15px] text-ink-2">{q}</p>
+      <p className="text-2xl font-semibold leading-snug tracking-[-0.01em] text-ink [text-wrap:balance]">{children}</p>
+      {sub && <p className="text-[15px] text-ink-2">{sub}</p>}
     </div>
   );
 }
 
 export function KpiTile({ label, value, unit, note, tone }: { label: string; value: string; unit?: string; note?: string; tone?: Tone }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1 rounded-[8px] border border-line bg-surface px-4 py-3">
-      <span className="text-[13px] text-ink-2">{label}</span>
-      <span className={`num text-[28px] font-semibold leading-none tracking-[-0.02em] ${tone ? TONE_TEXT[tone] : "text-ink"}`}>
+    <div className="flex min-w-0 flex-col gap-1.5 rounded-[8px] border border-line bg-surface px-5 py-4">
+      <span className="text-[15px] text-ink-2">{label}</span>
+      <span className={`num text-[38px] font-semibold leading-none tracking-[-0.02em] ${tone ? TONE_TEXT[tone] : "text-ink"}`}>
         {value}
-        {unit && <small className="ml-1 text-sm font-normal text-ink-2">{unit}</small>}
+        {unit && <small className="ml-1 text-base font-normal text-ink-2">{unit}</small>}
       </span>
-      {note && <span className="truncate text-xs text-ink-3">{note}</span>}
+      {note && <span className="truncate text-sm text-ink-3">{note}</span>}
     </div>
   );
 }
@@ -49,7 +49,7 @@ const TONE_DOT: Record<Tone, string> = { ok: "bg-ok", warn: "bg-warn", bad: "bg-
 /** 상태 배지: 점 + 글자 (색만으로 구분하지 않는다) */
 export function Badge({ tone, children }: { tone?: Tone; children: ReactNode }) {
   return (
-    <span className="inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-[6px] border border-line bg-surface px-2 text-xs text-ink">
+    <span className="inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-[6px] border border-line bg-surface px-2.5 text-sm text-ink">
       {tone && <i className={`size-1.5 rounded-full ${TONE_DOT[tone]}`} />}
       {children}
     </span>
@@ -58,10 +58,10 @@ export function Badge({ tone, children }: { tone?: Tone; children: ReactNode }) 
 
 export function Select({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
   return (
-    <label className="flex items-center gap-2 text-xs text-ink-2">
+    <label className="flex items-center gap-2 text-sm text-ink-2">
       {label}
       <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}
-        className="h-8 cursor-pointer rounded-[6px] border border-line-strong bg-surface px-2.5 text-[13px] text-ink">
+        className="h-8 cursor-pointer rounded-[6px] border border-line-strong bg-surface px-2.5 text-[15px] text-ink">
         {options.map((o) => <option key={o}>{o}</option>)}
       </select>
     </label>
@@ -70,20 +70,20 @@ export function Select({ label, value, options, onChange }: { label: string; val
 
 export function TextInput({ label, value, onChange, list, placeholder }: { label: string; value: string; onChange: (v: string) => void; list?: string; placeholder?: string }) {
   return (
-    <label className="flex items-center gap-2 text-xs text-ink-2">
+    <label className="flex items-center gap-2 text-sm text-ink-2">
       {label}
       <input value={value} onChange={(e) => onChange(e.target.value.toUpperCase())} list={list} placeholder={placeholder} aria-label={label} autoComplete="off"
-        className="num h-8 w-32 rounded-[6px] border border-line-strong bg-surface px-2.5 text-[13px] uppercase text-ink placeholder:normal-case placeholder:text-ink-3" />
+        className="num h-8 w-32 rounded-[6px] border border-line-strong bg-surface px-2.5 text-[15px] uppercase text-ink placeholder:normal-case placeholder:text-ink-3" />
     </label>
   );
 }
 
 export function DateInput({ label, value, min, max, onChange }: { label: string; value: string; min: string; max: string; onChange: (v: string) => void }) {
   return (
-    <label className="flex items-center gap-2 text-xs text-ink-2">
+    <label className="flex items-center gap-2 text-sm text-ink-2">
       {label}
       <input type="date" value={value} min={min} max={max} onChange={(e) => onChange(e.target.value)} aria-label={label}
-        className="num h-8 rounded-[6px] border border-line-strong bg-surface px-2.5 text-[13px] text-ink" />
+        className="num h-8 rounded-[6px] border border-line-strong bg-surface px-2.5 text-[15px] text-ink" />
     </label>
   );
 }
@@ -91,7 +91,7 @@ export function DateInput({ label, value, min, max, onChange }: { label: string;
 export function Button({ children, onClick, active }: { children: ReactNode; onClick?: () => void; active?: boolean }) {
   return (
     <button onClick={onClick} aria-pressed={active}
-      className={`h-8 rounded-[6px] border px-3 text-[13px] transition-colors ${active ? "border-accent bg-accent text-accent-ink" : "border-line-strong bg-surface text-ink hover:bg-subtle"}`}>
+      className={`h-8 rounded-[6px] border px-3 text-[15px] transition-colors ${active ? "border-accent bg-accent text-accent-ink" : "border-line-strong bg-surface text-ink hover:bg-subtle"}`}>
       {children}
     </button>
   );
@@ -101,21 +101,21 @@ export function Button({ children, onClick, active }: { children: ReactNode; onC
 export type Col<T> = { key: string; label: string; align?: "left" | "right"; width?: string; wide?: boolean; render: (row: T) => ReactNode };
 export function Table<T>({ cols, rows, rowKey, onRow, selected }: { cols: Col<T>[]; rows: T[]; rowKey: (r: T) => string; onRow?: (r: T) => void; selected?: (r: T) => boolean }) {
   return (
-    <div className="-mx-4 -my-4 overflow-x-auto">
-      <table className="w-full border-collapse text-[13px]">
+    <div className="-mx-5 -my-5 overflow-x-auto">
+      <table className="w-full border-collapse text-base">
         <thead>
           <tr className="border-b border-line">
             {cols.map((c) => (
-              <th key={c.key} style={{ width: c.width }} className={`${c.wide ? "hidden sm:table-cell" : ""} h-9 whitespace-nowrap px-4 text-xs font-medium text-ink-2 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.label}</th>
+              <th key={c.key} style={{ width: c.width }} className={`${c.wide ? "hidden sm:table-cell" : ""} h-11 whitespace-nowrap px-5 text-sm font-medium text-ink-2 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.label}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => (
             <tr key={rowKey(r)} onClick={onRow ? () => onRow(r) : undefined}
-              className={`h-9 border-b border-line last:border-b-0 ${onRow ? "cursor-pointer hover:bg-subtle" : ""} ${selected?.(r) ? "bg-accent-soft" : ""}`}>
+              className={`h-14 border-b border-line last:border-b-0 ${onRow ? "cursor-pointer hover:bg-subtle" : ""} ${selected?.(r) ? "bg-accent-soft" : ""}`}>
               {cols.map((c) => (
-                <td key={c.key} className={`${c.wide ? "hidden sm:table-cell" : ""} num whitespace-nowrap px-4 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.render(r)}</td>
+                <td key={c.key} className={`${c.wide ? "hidden sm:table-cell" : ""} num whitespace-nowrap px-5 ${c.align === "right" ? "text-right" : "text-left"}`}>{c.render(r)}</td>
               ))}
             </tr>
           ))}
@@ -132,12 +132,12 @@ export function Airline({ name, showName = true }: { name: string; showName?: bo
   const code = AIR_CODE[name];
   return (
     <span className="inline-flex min-w-0 items-center gap-2">
-      <span className="inline-flex h-5 w-14 flex-none items-center">
+      <span className="inline-flex h-6 w-16 flex-none items-center">
         {code && LOGOS.has(code) ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={`/logos/${code}.png`} alt="" className={`max-h-full max-w-full ${DARK.has(code) ? "dark:brightness-0 dark:invert-[.9]" : ""}`} />
         ) : (
-          <span className="num text-[11px] font-semibold text-ink-2">{code ?? name.slice(0, 2)}</span>
+          <span className="num text-[12px] font-semibold text-ink-2">{code ?? name.slice(0, 2)}</span>
         )}
       </span>
       {showName && <span className="truncate">{name}</span>}
@@ -148,7 +148,7 @@ export function Airline({ name, showName = true }: { name: string; showName?: bo
 /** 가는 막대(표 안의 비율 표시) */
 export function Meter({ value, max, tone }: { value: number; max: number; tone?: Tone }) {
   return (
-    <span className="inline-block h-1.5 w-24 overflow-hidden rounded-[2px] bg-subtle align-middle">
+    <span className="inline-block h-2 w-28 overflow-hidden rounded-[2px] bg-subtle align-middle">
       <i className={`block h-full ${tone ? TONE_DOT[tone] : "bg-chart-strong"}`} style={{ width: `${Math.min(100, (100 * value) / max)}%` }} />
     </span>
   );
@@ -156,19 +156,19 @@ export function Meter({ value, max, tone }: { value: number; max: number; tone?:
 
 /** 그래프 아래 출처 한 줄(작고 옅게): 원천 · 집계 기간 · 지연 기준 · n */
 export function Src({ children }: { children: ReactNode }) {
-  return <p className="num mt-3 text-[11px] leading-4 text-ink-3">{children}</p>;
+  return <p className="num mt-4 text-[12px] leading-4 text-ink-3">{children}</p>;
 }
 
 /** 페이지 맨 위: 질문 한 줄 + 큰 숫자 하나 + 답 한 문장 */
 export function Hero({ q, value, unit, tone, children }: { q: string; value: string; unit?: string; tone?: Tone; children: ReactNode }) {
   return (
     <div className="flex flex-wrap items-end gap-x-5 gap-y-1">
-      <div className={`num text-[56px] font-semibold leading-none tracking-[-0.03em] ${tone ? TONE_TEXT[tone] : "text-ink"}`}>
+      <div className={`num text-[72px] font-semibold leading-none tracking-[-0.03em] ${tone ? TONE_TEXT[tone] : "text-ink"}`}>
         {value}<small className="ml-1 text-2xl font-medium">{unit}</small>
       </div>
       <div className="min-w-0 pb-1">
-        <p className="text-[13px] text-ink-2">{q}</p>
-        <p className="text-lg font-semibold leading-snug text-ink [text-wrap:balance]">{children}</p>
+        <p className="text-[15px] text-ink-2">{q}</p>
+        <p className="text-2xl font-semibold leading-snug text-ink [text-wrap:balance]">{children}</p>
       </div>
     </div>
   );
@@ -178,8 +178,20 @@ export function Hero({ q, value, unit, tone, children }: { q: string; value: str
 export function InfoTip({ children }: { children: ReactNode }) {
   return (
     <span className="group relative inline-flex">
-      <span tabIndex={0} aria-label="그래프 설명" className="grid size-4 cursor-help place-items-center rounded-full border border-line-strong text-[10px] leading-none text-ink-3 outline-none">i</span>
-      <span role="tooltip" className="pointer-events-none absolute right-0 top-6 z-20 hidden w-64 rounded-[6px] border border-line bg-surface px-3 py-2 text-xs leading-5 text-ink-2 group-focus-within:block group-hover:block">{children}</span>
+      <span tabIndex={0} aria-label="그래프 설명" className="grid size-4 cursor-help place-items-center rounded-full border border-line-strong text-[11px] leading-none text-ink-3 outline-none">i</span>
+      <span role="tooltip" className="pointer-events-none absolute right-0 top-6 z-20 hidden w-64 rounded-[6px] border border-line bg-surface px-3 py-2 text-sm leading-5 text-ink-2 group-focus-within:block group-hover:block">{children}</span>
+    </span>
+  );
+}
+
+/** 항공사 로고 크게(로고가 없으면 코드 원형 배지) */
+export function AirlineLogo({ name, className = "h-12" }: { name: string; className?: string }) {
+  const code = AIR_CODE[name];
+  if (!code || !LOGOS.has(code)) return <span className={`num grid aspect-square place-items-center rounded-full bg-subtle text-lg font-bold text-ink-2 ${className}`}>{code ?? name.slice(0, 2)}</span>;
+  return (
+    <span className={`flex w-full min-w-0 items-center justify-center overflow-hidden ${className}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`/logos/${code}.png`} alt={name} className={`block h-auto max-h-full w-auto max-w-full object-contain ${DARK.has(code) ? "dark:brightness-0 dark:invert-[.9]" : ""}`} />
     </span>
   );
 }

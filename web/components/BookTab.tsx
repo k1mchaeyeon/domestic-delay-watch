@@ -1,10 +1,10 @@
 "use client";
 
 // 예약할 때: 질문 → 답 → KPI → 시간대 차트 → 항공사·비행기 표 → 늦는 이유 → (제주행이면) 월별 결항
-import type { History, RouteAirline, RouteFlight, RouteHour } from "@/lib/types";
+import type { History, RouteFlight, RouteHour } from "@/lib/types";
 import { CAUSE, hourName, late10, tenOf } from "@/lib/words";
 import { useEffect, useState } from "react";
-import { Airline, Answer, Card, InfoTip, KpiTile, Meter, Src, Table, type Col } from "@/components/ui";
+import { Airline, AirlineLogo, Answer, Card, InfoTip, KpiTile, Src, Table, type Col } from "@/components/ui";
 import { BarChart, type WxIcon } from "@/components/charts";
 
 export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string }) {
@@ -29,13 +29,6 @@ export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string 
   const rRate = Math.round((1000 * route.late) / route.base) / 10;
   const per = `${h.period.from.slice(0, 4)}.${+h.period.from.slice(4, 6)}~${h.period.to.slice(0, 4)}.${+h.period.to.slice(4, 6)}`;
   const SRC = `항공정보포털 · 국내선 여객 출발편 · 15분 초과 지연`;
-  const airCols: Col<RouteAirline>[] = [
-    { key: "rk", label: "순위", width: "48px", render: (a) => <span className="text-ink-2">{airlines.indexOf(a) + 1}</span> },
-    { key: "nm", label: "항공사", render: (a) => <Airline name={a.airline} /> },
-    { key: "ten", label: "늦게 뜬 횟수", align: "right", render: (a) => <span className={airlines.indexOf(a) === 0 ? "font-semibold text-bad" : ""}>10번 중 {tenOf(a.late, a.base)}번</span> },
-    { key: "bar", label: "", width: "120px", wide: true, render: (a) => <Meter value={rate(a)} max={rate(airlines[0])} tone={airlines.indexOf(a) === 0 ? "bad" : undefined} /> },
-    { key: "avg", label: "평균 지연", align: "right", wide: true, render: (a) => `${a.avg_delay}분` },
-  ];
   const flCols: Col<RouteFlight>[] = [
     { key: "rk", label: "순위", width: "48px", render: (f) => <span className="text-ink-2">{flights.indexOf(f) + 1}</span> },
     { key: "no", label: "편명", render: (f) => <span className="font-medium">{f.flight}</span> },
@@ -68,7 +61,16 @@ export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string 
 
       <div className="grid gap-4 xl:grid-cols-2">
         <Card title="제일 많이 늦는 항공사">
-          <Table cols={airCols} rows={airlines} rowKey={(a) => a.airline} />
+          <div className="grid grid-cols-3 gap-3">
+            {airlines.map((a, i) => (
+              <div key={a.airline} className={`flex min-w-0 flex-col items-center gap-3 rounded-[8px] border px-3 py-5 text-center ${i === 0 ? "border-bad bg-[color-mix(in_srgb,var(--bad)_6%,var(--surface))]" : "border-line"}`}>
+                <span className={`num text-sm font-bold tracking-wider ${i === 0 ? "text-bad" : "text-ink-3"}`}>TOP {i + 1}</span>
+                <span className="grid h-14 w-full place-items-center px-1"><AirlineLogo name={a.airline} className="h-10 sm:h-12" /></span>
+                <span className="truncate text-base font-semibold text-ink">{a.airline}</span>
+                <span className="num text-sm text-ink-2">10번 중 <b className={i === 0 ? "text-bad" : "text-ink"}>{tenOf(a.late, a.base)}번</b> 늦음<br />평균 {a.avg_delay}분</span>
+              </div>
+            ))}
+          </div>
           <Src>{SRC} · {per}</Src>
         </Card>
         <Card title="제일 자주 늦는 비행기">

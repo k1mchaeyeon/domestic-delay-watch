@@ -9,7 +9,7 @@ export type WxIcon = "wind" | "snow" | "typhoon" | "fog" | "rain" | "storm";
 
 const FILL = { ok: "var(--ok)", bad: "var(--bad)", accent: "var(--accent)" } as const;
 
-export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryIn = 1, legend, showValues = false, max: maxIn }: {
+export function BarChart({ bars, unit = "%", height = 280, tickEvery: tickEveryIn = 1, legend, showValues = false, max: maxIn }: {
   bars: Bar[]; unit?: string; height?: number; tickEvery?: number; legend?: { tone: keyof typeof FILL; label: string }[];
   /** 막대 위에 값 표시 */ showValues?: boolean; /** y축 최댓값 고정(예: 100%) */ max?: number;
 }) {
@@ -26,7 +26,7 @@ export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryI
   }, []);
   const hasSub = bars.some((b) => b.sub);
   const hasIcon = bars.some((b) => b.icon);
-  const H = height, pl = 40, pr = 8, pt = (showValues ? 22 : 12) + (hasIcon ? 22 : 0), pb = hasSub ? 42 : 28;
+  const H = height, pl = 48, pr = 8, pt = (showValues ? 22 : 12) + (hasIcon ? 22 : 0), pb = hasSub ? 48 : 32;
   const raw = Math.max(...bars.map((b) => b.value), 0);
   const step = niceStep(raw / 4);
   const max = maxIn ?? Math.max(step, Math.ceil(raw / step) * step);
@@ -42,7 +42,7 @@ export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryI
         {ticks.map((t) => (
           <g key={t}>
             <line x1={pl} x2={W - pr} y1={y(t)} y2={y(t)} stroke="var(--line)" />
-            <text x={pl - 8} y={y(t) + 4} textAnchor="end" fontSize={11} fill="var(--ink-3)" className="num">{fmt(t)}{unit}</text>
+            <text x={pl - 8} y={y(t) + 4} textAnchor="end" fontSize={13} fill="var(--ink-3)" className="num">{fmt(t)}{unit}</text>
           </g>
         ))}
         {bars.map((b, i) => {
@@ -52,22 +52,22 @@ export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryI
             <g key={b.key} onPointerEnter={() => setHover(i)} onPointerLeave={() => setHover(null)}>
               <rect x={pl + i * bw} y={pt} width={bw} height={H - pt - pb} fill="transparent" />
               <path d={roundTop(x, top, w, H - pb - top, Math.min(3, w / 2))} fill={fill} />
-              {i % tickEvery === 0 && <text x={x + w / 2} y={hasSub ? H - 23 : H - 9} textAnchor="middle" fontSize={11} fill="var(--ink-3)">{b.label}</text>}
-              {b.sub && <text x={x + w / 2} y={H - 8} textAnchor="middle" fontSize={10} fill="var(--ink-3)" className="num">{b.sub}</text>}
+              {i % tickEvery === 0 && <text x={x + w / 2} y={hasSub ? H - 26 : H - 10} textAnchor="middle" fontSize={13} fill="var(--ink-3)">{b.label}</text>}
+              {b.sub && <text x={x + w / 2} y={H - 8} textAnchor="middle" fontSize={12} fill="var(--ink-3)" className="num">{b.sub}</text>}
               {b.icon && <WxGlyph kind={b.icon} x={x + w / 2} y={top - (showValues ? 22 : 6) - 9} />}
-              {showValues && <text x={x + w / 2} y={top - 6} textAnchor="middle" fontSize={12} fontWeight={600} fill="var(--ink)" className="num">{fmtV(b.value)}{unit}</text>}
+              {showValues && <text x={x + w / 2} y={top - 6} textAnchor="middle" fontSize={14} fontWeight={600} fill="var(--ink)" className="num">{fmtV(b.value)}{unit}</text>}
             </g>
           );
         })}
       </svg>
       {hover != null && (
-        <div className="pointer-events-none absolute top-1 rounded-[6px] border border-line bg-surface px-2 py-1 text-xs text-ink shadow-none"
+        <div className="pointer-events-none absolute top-1 rounded-[6px] border border-line bg-surface px-2 py-1 text-sm text-ink shadow-none"
           style={{ left: `${((pl + (hover + 0.5) * bw) / W) * 100}%`, transform: "translateX(-50%)" }}>
           {bars[hover].tip}
         </div>
       )}
       {legend && (
-        <div className="mt-2 flex flex-wrap gap-4 text-xs text-ink-2">
+        <div className="mt-2 flex flex-wrap gap-4 text-sm text-ink-2">
           {legend.map((l) => <span key={l.label} className="inline-flex items-center gap-1.5"><i className="size-2 rounded-[2px]" style={{ background: FILL[l.tone] }} />{l.label}</span>)}
         </div>
       )}

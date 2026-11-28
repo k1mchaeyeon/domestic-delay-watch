@@ -77,11 +77,11 @@ function Domino({ legs, r, ko }: { legs: Leg[]; r: Leg; ko: (c: string | null) =
   const mine = chain.find((c) => c.leg === r), mineBase = base.find((c) => c.leg === r);
   const moved = mine && mineBase ? Math.round(mine.depDelayMin - mineBase.depDelayMin) : 0;
   const hops = chain.filter((c) => c.carriedMin > 0).length;
-  const field = "num h-8 rounded-[6px] border border-line-strong bg-surface px-2 text-[13px] text-ink";
+  const field = "num h-8 rounded-[6px] border border-line-strong bg-surface px-2 text-[15px] text-ink";
 
   return (
     <Card title="지연 도미노" right={<span>준비 시간이 {MTT_MIN}분보다 짧으면 앞 편 지연이 넘어와요 · 오늘 {hops}번 넘어옴</span>}>
-      <div className="mb-3 flex flex-wrap items-center gap-2 text-[13px] text-ink-2">
+      <div className="mb-3 flex flex-wrap items-center gap-2 text-[15px] text-ink-2">
         <span>만약</span>
         <select aria-label="가정할 편" value={what} onChange={(e) => setPick(e.target.value)} className={field}>
           {before.map((l) => <option key={l.flight_no + l.dep_sched_at} value={l.flight_no}>{l.flight_no} ({hm(l.dep_sched_at)})</option>)}
@@ -127,7 +127,7 @@ export function AirportTab({ h, AP, ROT, day, cur }: Ctx) {
               <p className="text-[15px] font-semibold">
                 {d != null && d > 15 ? <>지금 <span className={d > 45 ? "text-bad" : "text-warn"}>{dur(d)}</span> 늦었어요. 보통은 {p90}분을 넘기지 않아요</> : <>늦어져도 보통 {p90}분 안에는 떠요</>}
               </p>
-              <p className="mt-1 text-[13px] text-ink-2">이 시간대 {ko(r.dep_airport)} → {ko(r.arr_airport)} 비행기 10대 중 9대가 {p90}분 안에, 절반은 {p50}분 안에 떠났어요.</p>
+              <p className="mt-1 text-[15px] text-ink-2">이 시간대 {ko(r.dep_airport)} → {ko(r.arr_airport)} 비행기 10대 중 9대가 {p90}분 안에, 절반은 {p50}분 안에 떠났어요.</p>
               <div className="mt-4 grid grid-cols-3 gap-3">
                 <KpiTile label="절반은" value={`${p50}`} unit="분 안" />
                 <KpiTile label="10대 중 9대" value={`${p90}`} unit="분 안" />
@@ -158,7 +158,7 @@ export function ArriveTab({ AP, cur }: Ctx) {
   useEffect(() => { setMeet(clock(Math.ceil((land + 90) / 30) * 30)); }, [land]);
   const [mh, mm] = meet.split(":").map(Number);
   const left = mh * 60 + mm - (land + 5 + out + move);
-  const field = "num h-8 rounded-[6px] border border-line-strong bg-surface px-2.5 text-[13px] text-ink";
+  const field = "num h-8 rounded-[6px] border border-line-strong bg-surface px-2.5 text-[15px] text-ink";
   return (
     <div className="flex flex-col gap-4">
       <Answer q={`${r.flight_no}, ${ko(r.arr_airport)}에 언제 마중 나가면 돼요?`}
@@ -167,9 +167,9 @@ export function ArriveTab({ AP, cur }: Ctx) {
       </Answer>
       <Card title="약속에 맞출 수 있을까요?">
         <div className="flex flex-wrap items-end gap-4">
-          <label className="flex flex-col gap-1 text-xs text-ink-2">약속 시각<input type="time" value={meet} onChange={(e) => setMeet(e.target.value)} className={field} /></label>
-          <label className="flex flex-col gap-1 text-xs text-ink-2">공항에서 나오는 데(분)<input type="number" min={0} step={5} value={out} onChange={(e) => setOut(+e.target.value || 0)} className={`${field} w-28`} /></label>
-          <label className="flex flex-col gap-1 text-xs text-ink-2">약속 장소까지(분)<input type="number" min={0} step={5} value={move} onChange={(e) => setMove(+e.target.value || 0)} className={`${field} w-28`} /></label>
+          <label className="flex flex-col gap-1 text-sm text-ink-2">약속 시각<input type="time" value={meet} onChange={(e) => setMeet(e.target.value)} className={field} /></label>
+          <label className="flex flex-col gap-1 text-sm text-ink-2">공항에서 나오는 데(분)<input type="number" min={0} step={5} value={out} onChange={(e) => setOut(+e.target.value || 0)} className={`${field} w-28`} /></label>
+          <label className="flex flex-col gap-1 text-sm text-ink-2">약속 장소까지(분)<input type="number" min={0} step={5} value={move} onChange={(e) => setMove(+e.target.value || 0)} className={`${field} w-28`} /></label>
         </div>
         <Src>한국공항공사 API · {r.flight_date} 착륙 기록</Src>
         <p className="mt-4 text-xl font-semibold">{left >= 0 ? <>약속까지 <span className="text-ok">{dur(left)}</span> 남아요</> : <>약속에 <span className="text-bad">{dur(-left)}</span> 늦어요</>}</p>

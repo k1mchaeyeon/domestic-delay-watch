@@ -17,7 +17,7 @@ export function FidsBoard({ rows, ko, mine }: { rows: Leg[]; ko: (c: string | nu
   const cols = "grid-cols-[48px_48px_minmax(96px,1.3fr)_64px_minmax(70px,1fr)_minmax(84px,1fr)]";
   return (
     <div className="overflow-hidden rounded-[6px] border-4 border-[#05070d] bg-[#0a1a47]">
-      <div className={`grid ${cols} gap-2 bg-[#0d2463] px-3 py-1.5 text-[10px] font-bold leading-tight text-white`}>
+      <div className={`grid ${cols} gap-2 bg-[#0d2463] px-3 py-1.5 text-[11px] font-bold leading-tight text-white`}>
         {[["시간", "Time"], ["변경", "Actual"], ["항공사", "Airline"], ["편명", "Flight"], ["목적지", "To"], ["비고", "Remarks"]].map(([k, e]) => (
           <span key={e}>{k}<span className="block font-semibold text-slate-400">{e}</span></span>
         ))}
@@ -31,14 +31,14 @@ export function FidsBoard({ rows, ko, mine }: { rows: Leg[]; ko: (c: string | nu
             <span className="font-mono tabular-nums">{hm(x.dep_sched_at)}</span>
             <span className={`font-mono tabular-nums ${changed ? ((x.dep_delay_gate_est_min ?? 0) > 15 ? "text-amber-300" : "text-sky-200") : "text-transparent"}`}>{changed ? hm(x.dep_actual_at) : "--:--"}</span>
             <span className="flex min-w-0 items-center gap-1.5">
-              <span className="flex h-4 w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-white/15 text-[10px] font-black">{code}</span>
+              <span className="flex h-4 w-[26px] shrink-0 items-center justify-center rounded-[2px] bg-white/15 text-[11px] font-black">{code}</span>
               <span className="truncate font-semibold text-slate-100">{x.airline_name}</span>
             </span>
             <span className="font-mono">{x.flight_no}</span>
             <span className="truncate">{ko(x.arr_airport)}</span>
             <span className={`min-w-0 leading-tight ${rm.cls}`}>
               <span className="block truncate">{rm.ko}</span>
-              <span className="block truncate text-[10px] font-semibold opacity-80">{rm.en}</span>
+              <span className="block truncate text-[11px] font-semibold opacity-80">{rm.en}</span>
             </span>
           </div>
         );

@@ -22,17 +22,17 @@ function FlightCard({ data }: NodeProps<FlightNode>) {
     <div className={`w-[200px] rounded-[8px] border bg-surface px-3 py-2.5 text-left ${mine ? "border-accent ring-1 ring-accent" : "border-line-strong"}`}>
       <Handle type="target" position={Position.Left} className="!size-1.5 !min-w-0 !border-0 !bg-ink-3" />
       <div className="flex items-center justify-between gap-2">
-        <span className="num text-[13px] font-semibold text-ink">{l.flight_no}</span>
-        {mine && <span className="rounded-[4px] bg-accent px-1.5 py-0.5 text-[10px] font-medium text-accent-ink">내 비행기</span>}
+        <span className="num text-[15px] font-semibold text-ink">{l.flight_no}</span>
+        {mine && <span className="rounded-[4px] bg-accent px-1.5 py-0.5 text-[11px] font-medium text-accent-ink">내 비행기</span>}
       </div>
-      <p className="truncate text-xs text-ink-2">{ko(l.dep_airport)} → {ko(l.arr_airport)}</p>
+      <p className="truncate text-sm text-ink-2">{ko(l.dep_airport)} → {ko(l.arr_airport)}</p>
       <div className="mt-1.5 flex items-baseline justify-between gap-2">
-        <span className="num text-xs text-ink-2">{hm(l.dep_sched_at)} 출발 예정</span>
-        <span className="num text-[13px] font-semibold" style={{ color: l.dep_delay_gate_est_min == null && !c.changed ? "var(--ink-3)" : toneVar(d) }}>
+        <span className="num text-sm text-ink-2">{hm(l.dep_sched_at)} 출발 예정</span>
+        <span className="num text-[15px] font-semibold" style={{ color: l.dep_delay_gate_est_min == null && !c.changed ? "var(--ink-3)" : toneVar(d) }}>
           {l.dep_delay_gate_est_min == null && !c.changed ? "기록 없음" : delayWord(d)}
         </span>
       </div>
-      <p className={`num mt-1.5 text-[11px] ${c.carriedMin > 0 ? "font-medium text-warn" : "text-ink-3"}`}>
+      <p className={`num mt-1.5 text-[12px] ${c.carriedMin > 0 ? "font-medium text-warn" : "text-ink-3"}`}>
         {first ? "오늘 첫 비행" : c.availMin == null ? "앞 편 기록 없음" : c.carriedMin > 0 ? `${c.availMin > 0 ? `준비 ${Math.round(c.availMin)}분` : "준비 시간 없음"} · 앞 편 지연 ${Math.round(c.carriedMin)}분 넘어옴` : `준비 ${Math.round(c.availMin)}분`}
       </p>
       {d > 15 && (
@@ -41,7 +41,7 @@ function FlightCard({ data }: NodeProps<FlightNode>) {
             <div style={{ width: `${(c.carriedMin / total) * 100}%`, background: "var(--warn)" }} />
             <div style={{ width: `${(c.ownMin / total) * 100}%`, background: "var(--chart-strong)" }} />
           </div>
-          <p className="num mt-1 text-[11px] text-ink-3">앞 편에서 {Math.round(c.carriedMin)}분 · 이 편에서 {Math.round(c.ownMin)}분</p>
+          <p className="num mt-1 text-[12px] text-ink-3">앞 편에서 {Math.round(c.carriedMin)}분 · 이 편에서 {Math.round(c.ownMin)}분</p>
         </>
       )}
       <Handle type="source" position={Position.Right} className="!size-1.5 !min-w-0 !border-0 !bg-ink-3" />

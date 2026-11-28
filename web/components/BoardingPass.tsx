@@ -18,9 +18,9 @@ function Plane({ className = "" }: { className?: string }) {
 function Field({ k, v, strike, tone }: { k: string; v: string; strike?: string; tone?: "ok" | "warn" | "bad" }) {
   return (
     <div className="min-w-0">
-      <div className="text-[10px] font-semibold tracking-wider text-ink-3">{k}</div>
+      <div className="text-[11px] font-semibold tracking-wider text-ink-3">{k}</div>
       <div className={`num truncate text-[15px] font-bold ${tone ? `text-${tone}` : "text-ink"}`}>{v}</div>
-      {strike && <div className="num text-[11px] text-ink-3 line-through">{strike}</div>}
+      {strike && <div className="num text-[12px] text-ink-3 line-through">{strike}</div>}
     </div>
   );
 }
@@ -35,8 +35,8 @@ export function BoardingPass({ r, ko, compact = false, onClose }: { r: Leg; ko: 
   return (
     <section className={`overflow-hidden rounded-[8px] border border-line bg-surface ${compact ? "shadow-xl" : ""}`}>
       <div className="flex items-center justify-between bg-accent px-4 py-2 text-accent-ink">
-        <span className="flex items-center gap-2 text-[13px] font-bold tracking-wider">BOARDING PASS <Plane className="size-4" /></span>
-        <span className="flex items-center gap-2 truncate pl-2 text-xs font-medium opacity-90">{r.airline_name}
+        <span className="flex items-center gap-2 text-[15px] font-bold tracking-wider">BOARDING PASS <Plane className="size-4" /></span>
+        <span className="flex items-center gap-2 truncate pl-2 text-sm font-medium opacity-90">{r.airline_name}
           {onClose && <button onClick={onClose} aria-label="탑승권 닫기" className="grid size-6 place-items-center rounded-full bg-black/20 text-sm leading-none hover:bg-black/40">×</button>}
         </span>
       </div>
@@ -45,9 +45,9 @@ export function BoardingPass({ r, ko, compact = false, onClose }: { r: Leg; ko: 
         <div className="px-5 py-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-[10px] font-semibold tracking-wider text-ink-3">FROM</div>
+              <div className="text-[11px] font-semibold tracking-wider text-ink-3">FROM</div>
               <div className="num text-4xl font-black leading-none tracking-tight text-ink">{r.dep_airport}</div>
-              <div className="mt-1 text-xs text-ink-2">{ko(r.dep_airport)}</div>
+              <div className="mt-1 text-sm text-ink-2">{ko(r.dep_airport)}</div>
             </div>
             <div className="flex flex-1 flex-col items-center text-accent">
               <div className="relative h-5 w-full">
@@ -57,12 +57,12 @@ export function BoardingPass({ r, ko, compact = false, onClose }: { r: Leg; ko: 
                 <span className="absolute left-3 top-1/2 h-0.5 -translate-y-1/2 bg-accent" style={{ width: `calc((100% - 24px) * ${pct / 100})` }} />
                 <span className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface px-0.5" style={{ left: `calc(12px + (100% - 24px) * ${pct / 100})` }}><Plane className="size-4 rotate-45" /></span>
               </div>
-              <span className="num mt-1 text-[11px] text-ink-3">{block > 0 ? `${block}분 비행` : ""}</span>
+              <span className="num mt-1 text-[12px] text-ink-3">{block > 0 ? `${block}분 비행` : ""}</span>
             </div>
             <div className="text-right">
-              <div className="text-[10px] font-semibold tracking-wider text-ink-3">TO</div>
+              <div className="text-[11px] font-semibold tracking-wider text-ink-3">TO</div>
               <div className="num text-4xl font-black leading-none tracking-tight text-ink">{r.arr_airport}</div>
-              <div className="mt-1 text-xs text-ink-2">{ko(r.arr_airport)}</div>
+              <div className="mt-1 text-sm text-ink-2">{ko(r.arr_airport)}</div>
             </div>
           </div>
           <div className={`mt-4 grid gap-3 ${compact ? "grid-cols-2" : "grid-cols-3 sm:grid-cols-4"}`}>
@@ -81,8 +81,8 @@ export function BoardingPass({ r, ko, compact = false, onClose }: { r: Leg; ko: 
         {/* 스텁 */}
         <div className={`flex flex-col justify-between gap-3 border-t border-dashed border-line-strong px-5 py-4 ${compact ? "" : "md:border-t-0"}`}>
           <div>
-            <div className="text-[10px] font-semibold tracking-wider text-ink-3">STATUS</div>
-            <span className={`mt-1 inline-block rounded-[4px] px-2 py-0.5 text-xs font-bold text-white ${tone ? TONE_BG[tone] : "bg-ink-3"}`}>{status}</span>
+            <div className="text-[11px] font-semibold tracking-wider text-ink-3">STATUS</div>
+            <span className={`mt-1 inline-block rounded-[4px] px-2 py-0.5 text-sm font-bold text-white ${tone ? TONE_BG[tone] : "bg-ink-3"}`}>{status}</span>
           </div>
           <Field k="AIRCRAFT" v={r.reg_no} />
           <div className="h-8" aria-hidden="true"

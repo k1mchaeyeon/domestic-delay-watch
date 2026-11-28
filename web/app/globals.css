@@ -34,7 +34,7 @@
   --radius-ctl: 6px; --radius-card: 8px;
 }
 html { -webkit-font-smoothing: antialiased; accent-color: var(--accent); }
-body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; word-break: keep-all; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 16px; line-height: 1.55; word-break: keep-all; }
 ::selection { background: var(--accent-soft); }
 .num { font-variant-numeric: tabular-nums; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }

@@ -94,7 +94,7 @@ export function LegMap({ legs, cur, AP, pass }: { legs: Leg[]; cur: Leg; AP: Air
             <Marker key={c} longitude={a.lon} latitude={a.lat} anchor="left" onClick={(e) => { e.originalEvent.stopPropagation(); if (c === cur.dep_airport || c === cur.arr_airport) setOpen(true); }}>
               <div className={`flex items-center gap-1 ${c === cur.dep_airport || c === cur.arr_airport ? "cursor-pointer" : ""}`}>
                 <span className="size-2 rounded-full bg-ink ring-2 ring-surface" />
-                <span className="text-[11px] font-semibold text-ink [text-shadow:0_0_3px_var(--surface)]">{a.ko}</span>
+                <span className="text-[12px] font-semibold text-ink [text-shadow:0_0_3px_var(--surface)]">{a.ko}</span>
               </div>
             </Marker>
           ))}
@@ -105,15 +105,15 @@ export function LegMap({ legs, cur, AP, pass }: { legs: Leg[]; cur: Leg; AP: Air
           )}
         </MapGL>
         {/* 지도 위 오버레이: 지금 시각·상태 + 탑승권 패널 */}
-        <div className="pointer-events-none absolute left-3 top-3 max-w-[calc(100%-70px)] rounded-[6px] border border-line bg-surface/90 px-3 py-1.5 text-[13px] backdrop-blur-sm">
+        <div className="pointer-events-none absolute left-3 top-3 max-w-[calc(100%-70px)] rounded-[6px] border border-line bg-surface/90 px-3 py-1.5 text-[15px] backdrop-blur-sm">
           <span className="num font-semibold">{clock(tNow)}</span> <span className="text-ink-2">{say}</span>
-          {pass && !open && <span className="block text-[11px] text-ink-3">비행기를 누르면 탑승권</span>}
+          {pass && !open && <span className="block text-[12px] text-ink-3">비행기를 누르면 탑승권</span>}
         </div>
         {pass && open && (
           <div className="absolute inset-x-3 bottom-3 top-3 z-10 overflow-y-auto sm:right-auto sm:w-[360px]">{pass(() => setOpen(false))}</div>
         )}
       </div>
-      <div className="mt-2 flex items-center gap-3 text-xs text-ink-3">
+      <div className="mt-2 flex items-center gap-3 text-sm text-ink-3">
         <span className="num">{clock(t0)}</span>
         <input type="range" min={t0} max={t1} value={tNow} onChange={(e) => setT(+e.target.value)} aria-label="시각 바꿔 보기" className="flex-1" />
         <span className="num">{clock(t1)}</span>

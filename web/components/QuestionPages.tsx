@@ -23,7 +23,7 @@ function Heatmap({ rows, cols, cell, fmt, rowLabel }: {
   const max = Math.max(1e-9, ...vals);
   return (
     <div className="overflow-x-auto">
-      <table className="num w-full border-separate border-spacing-[3px] text-xs">
+      <table className="num w-full border-separate border-spacing-[3px] text-sm">
         <thead>
           <tr>
             <th />
