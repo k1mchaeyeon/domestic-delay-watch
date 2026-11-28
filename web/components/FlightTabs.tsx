@@ -7,6 +7,8 @@ import { clock, dayLabel, delayTone, delayWord, dur, hm, mins, shift } from "@/l
 import { Airline, Answer, Badge, Card, KpiTile, Src, Table, type Col } from "@/components/ui";
 import { SatMap } from "@/components/SatMap";
 import { CascadeGraph } from "@/components/CascadeGraph";
+import { BoardingPass } from "@/components/BoardingPass";
+import { FidsBoard } from "@/components/FidsBoard";
 import { cascadeOrigin, computeCascade, MTT_MIN } from "@/lib/cascade";
 
 type Ctx = { h: History; AP: Airports; ROT: Record<string, Leg[]>; DAYS: string[]; day: string; cur: Leg; goDay: (d: string, fno?: string) => void; SAT: Satellite | null };
@@ -37,12 +39,7 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
           : <><span className={d > 45 ? "text-bad" : "text-warn"}>{dur(d)}쯤</span> 늦게 떠요</>}
       </Answer>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <KpiTile label="출발 예정" value={hm(r.dep_sched_at)} note={`${ko(r.dep_airport)} → ${ko(r.arr_airport)}`} />
-        <KpiTile label="실제 이륙" value={hm(r.dep_actual_at) || "-"} tone={delayTone(d)} note={d == null ? undefined : delayWord(d)} />
-        <KpiTile label="도착 예정" value={hm(r.arr_sched_at)} />
-        <KpiTile label="실제 착륙" value={hm(r.arr_actual_at) || "-"} />
-      </div>
+      <BoardingPass r={r} ko={ko} />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <Card title="내가 탈 비행기는 지금 어디쯤?">
@@ -143,12 +140,7 @@ export function AirportTab({ h, AP, ROT, day, cur }: Ctx) {
         </Card>
         <Card title="다른 비행기로 바꿀 수 있을까요?" right={<span>{alts.length ? `${ko(r.arr_airport)} 가는 다음 비행기 ${alts.length}편` : "다음 비행기 없음"}</span>}>
           {alts.length ? (
-            <Table<Leg> cols={[
-              { key: "t", label: "출발 예정", width: "96px", render: (x) => <span className="font-medium">{hm(x.dep_sched_at)}</span> },
-              { key: "a", label: "항공사", render: (x) => <Airline name={x.airline_name} /> },
-              { key: "n", label: "편명", wide: true, render: (x) => x.flight_no },
-              { key: "s", label: "출발", align: "right", render: (x) => <Badge tone={delayTone(x.dep_delay_gate_est_min)}>{x.dep_delay_gate_est_min == null ? "예정" : delayWord(x.dep_delay_gate_est_min)}</Badge> },
-            ] as Col<Leg>[]} rows={alts} rowKey={(x) => x.flight_no + x.dep_sched_at} />
+            <FidsBoard rows={alts} ko={ko} />
           ) : <p className="text-ink-2">이날은 {ko(r.arr_airport)} 가는 다음 비행기가 없어요</p>}
           <Src>{KACS([day])}</Src>
         </Card>
