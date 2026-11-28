@@ -173,3 +173,13 @@ export function Hero({ q, value, unit, tone, children }: { q: string; value: str
     </div>
   );
 }
+
+/** 눈에 띄지 않는 i 아이콘. 마우스를 올리면 설명(축 등)을 보여 준다 */
+export function InfoTip({ children }: { children: ReactNode }) {
+  return (
+    <span className="group relative inline-flex">
+      <span tabIndex={0} aria-label="그래프 설명" className="grid size-4 cursor-help place-items-center rounded-full border border-line-strong text-[10px] leading-none text-ink-3 outline-none">i</span>
+      <span role="tooltip" className="pointer-events-none absolute right-0 top-6 z-20 hidden w-64 rounded-[6px] border border-line bg-surface px-3 py-2 text-xs leading-5 text-ink-2 group-focus-within:block group-hover:block">{children}</span>
+    </span>
+  );
+}

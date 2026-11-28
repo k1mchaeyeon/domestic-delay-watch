@@ -4,8 +4,8 @@
 import type { History, RouteAirline, RouteFlight, RouteHour } from "@/lib/types";
 import { CAUSE, hourName, late10, tenOf } from "@/lib/words";
 import { useEffect, useState } from "react";
-import { Airline, Answer, Card, KpiTile, Meter, Src, Table, type Col } from "@/components/ui";
-import { BarChart } from "@/components/charts";
+import { Airline, Answer, Card, InfoTip, KpiTile, Meter, Src, Table, type Col } from "@/components/ui";
+import { BarChart, type WxIcon } from "@/components/charts";
 
 export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string }) {
   const same = <T extends { dep?: string; arr?: string }>(x: T) => x.dep === dep && x.arr === arr;
@@ -28,7 +28,7 @@ export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string 
 
   const rRate = Math.round((1000 * route.late) / route.base) / 10;
   const per = `${h.period.from.slice(0, 4)}.${+h.period.from.slice(4, 6)}~${h.period.to.slice(0, 4)}.${+h.period.to.slice(4, 6)}`;
-  const SRC = `항공정보포털 운항 실적 · 국내선 여객 출발편 · 지연 = 게이트 기준 15분 초과`;
+  const SRC = `항공정보포털 · 국내선 여객 출발편 · 15분 초과 지연`;
   const airCols: Col<RouteAirline>[] = [
     { key: "rk", label: "순위", width: "48px", render: (a) => <span className="text-ink-2">{airlines.indexOf(a) + 1}</span> },
     { key: "nm", label: "항공사", render: (a) => <Airline name={a.airline} /> },
@@ -46,8 +46,7 @@ export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string 
 
   return (
     <div className="flex flex-col gap-4">
-      <Answer q={`${dep} → ${arr}, 몇 시 비행기가 덜 늦어요?`}
-        sub={<>{hourName(best.h)} 비행기는 {late10(tenOf(best.late, best.base))}. {hourName(worst.h)}는 {late10(tenOf(worst.late, worst.base))}.</>}>
+      <Answer q={`${dep} → ${arr}, 몇 시 비행기가 덜 늦어요?`}>
         <span className="text-ok">{hourName(best.h)}</span> 비행기가 제일 덜 늦어요
       </Answer>
 
@@ -64,31 +63,28 @@ export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string 
           tickEvery={2}
           legend={[{ tone: "ok", label: "제일 덜 늦는 시간" }]}
         />
-        <Src>{SRC} · {per} · {dep} → {arr} {route.base.toLocaleString()}편 · 그 시간대 편 중 늦은 비율 · 200편 미만 시간대 제외</Src>
+        <Src>{SRC} · {per} · {route.base.toLocaleString()}편</Src>
       </Card>
 
       <div className="grid gap-4 xl:grid-cols-2">
         <Card title="제일 많이 늦는 항공사">
           <Table cols={airCols} rows={airlines} rowKey={(a) => a.airline} />
-          <Src>{SRC} · {per} · 이 노선 200편 이상, 지금도 운항하는 항공사</Src>
+          <Src>{SRC} · {per}</Src>
         </Card>
         <Card title="제일 자주 늦는 비행기">
           <Table cols={flCols} rows={flights} rowKey={(f) => f.flight} />
-          <Src>{SRC} · 2025.1~{h.period.to.slice(0, 4)}.{+h.period.to.slice(4, 6)} · 편명별 100편 이상</Src>
+          <Src>{SRC} · 2025.1~{h.period.to.slice(0, 4)}.{+h.period.to.slice(4, 6)}</Src>
         </Card>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
         {ctot > 0 && (
-          <Card title={`${dep} → ${arr} 비행기가 늦는 이유`}>
-            <p className="mb-3 text-[15px] font-semibold">
-              늦은 비행기 10대 중 <span className="text-bad">{Math.round((10 * causes[0].late) / ctot)}대</span>는 {CAUSE[causes[0].cause_group]}예요
-            </p>
+          <Card title={`${dep} → ${arr} 늦는 이유 · 10대 중 ${Math.round((10 * causes[0].late) / ctot)}대는 ${CAUSE[causes[0].cause_group]}`}>
             <Table cols={[
               { key: "c", label: "이유", render: (c) => CAUSE[c.cause_group] },
               { key: "v", label: "늦은 비행기 100대 중", align: "right", render: (c) => `${Math.max(1, Math.round((100 * c.late) / ctot))}대` },
             ]} rows={causes.slice(0, 4)} rowKey={(c) => c.cause_group} />
-            <Src>{SRC} · {per} · 15분 넘게 늦은 편의 기록된 사유 · 사유 분류는 2023.1부터</Src>
+            <Src>{SRC} · {per}</Src>
           </Card>
         )}
         <Card title="전체 국내선에서 늦는 이유 순위">
@@ -97,7 +93,7 @@ export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string 
             { key: "c", label: "이유", render: (c) => <span className={causes[0] && c.cause_group === causes[0].cause_group ? "font-semibold" : ""}>{CAUSE[c.cause_group]}</span> },
             { key: "v", label: "늦은 비행기 100대 중", align: "right", render: (c) => `${Math.max(1, Math.round((100 * c.late) / atot))}대` },
           ]} rows={all.slice(0, 5)} rowKey={(c) => c.cause_group} />
-          <Src>{SRC} · 2025.1~{h.period.to.slice(0, 4)}.{+h.period.to.slice(4, 6)} · 국내선 전체 늦은 편의 기록된 사유</Src>
+          <Src>{SRC} · 2025.1~{h.period.to.slice(0, 4)}.{+h.period.to.slice(4, 6)}</Src>
         </Card>
       </div>
 
@@ -106,7 +102,7 @@ export function BookTab({ h, dep, arr }: { h: History; dep: string; arr: string 
   );
 }
 
-type JejuWeather = { source: string; total: number; kinds: { kind: string; n: number }[]; after_2023: { weather_cancel: number; note: string } };
+type JejuWeather = { source: string; total: number; kinds: { kind: string; n: number }[]; after_2023: { weather_cancel: number; note: string }; by_month?: Record<string, { total: number; top: string; top_n: number }> };
 
 function JejuCard({ h, dep }: { h: History; dep: string }) {
   const [W, setW] = useState<JejuWeather | null>(null);
@@ -117,27 +113,14 @@ function JejuCard({ h, dep }: { h: History; dep: string }) {
   const rate = (x: (typeof m)[number]) => (x.f ? x.c / x.f : 0);
   const per = (x: (typeof m)[number]) => Math.round(1000 * rate(x)) / 10;
   const top = m.reduce((a, b) => (rate(b) > rate(a) ? b : a));
-  const low = m.reduce((a, b) => (rate(b) < rate(a) ? b : a));
-  const weather = top.c ? Math.round((10 * top.w) / top.c) : 0;
+  const ICON: Record<string, WxIcon> = { 눈: "snow", 바람: "wind", 태풍: "typhoon", 시정: "fog", 운고: "fog", 비: "rain", 뇌전: "storm" };
+  const KO: Record<WxIcon, string> = { snow: "눈", wind: "바람", typhoon: "태풍", fog: "안개·낮은 구름", rain: "비", storm: "뇌우" };
+  const iconOf = (mo: number) => { const b = W?.by_month?.[String(mo)]; return b && b.top_n >= 15 && b.top_n / b.total >= 0.4 ? ICON[b.top] : undefined; };
   return (
-    <Card title={jo === "전체" ? "제주 가는 비행기 월별 결항률" : `${jo}에서 제주 가는 비행기 월별 결항률`}>
-      <div className="mb-3">
-        <Answer q={jo === "전체" ? "제주 가는 비행기, 언제 결항이 많아요?" : `${jo}에서 제주 가는 비행기, 언제 결항이 많아요?`}
-          sub={<>{top.m}월엔 100편 중 {per(top)}편꼴로 결항돼요{weather >= 5 ? ". 대부분 날씨 때문이에요" : ""}. {per(low) < 0.5 ? `${low.m}월엔 결항이 거의 없어요.` : `${low.m}월은 100편 중 ${per(low)}편이에요.`}</>}>
-          <span className="text-bad">{top.m}월</span>에 결항이 가장 많아요
-        </Answer>
-      </div>
-      <BarChart bars={m.map((x) => ({ key: x.m, label: `${x.m}월`, value: per(x), tone: x === top ? "bad" : undefined, tip: `${x.m}월 · 100편 중 ${per(x)}편 결항 · ${x.f.toLocaleString()}편` }))} height={180} />
-      <Src>항공정보포털 운항 실적 · {h.period.from.slice(0, 4)}.{+h.period.from.slice(4, 6)}~{h.period.to.slice(0, 4)}.{+h.period.to.slice(4, 6)} · {jo === "전체" ? "전국" : jo} → 제주 여객 출발편 · 결항률 = 결항 ÷ 운항</Src>
-      {W && (
-        <div className="mt-5 border-t border-line pt-4">
-          <p className="mb-1 text-[13px] font-semibold text-ink">날씨 결항은 무엇 때문이었나</p>
-          <p className="mb-2 text-xs text-ink-2">바람·눈·태풍이 {Math.round((100 * W.kinds.filter((k) => ["바람", "눈", "태풍"].includes(k.kind)).reduce((a, b) => a + b.n, 0)) / W.total)}%</p>
-          <BarChart showValues height={170}
-            bars={W.kinds.filter((k) => k.n >= 5).map((k, i) => ({ key: k.kind, label: k.kind, value: Math.round((100 * k.n) / W.total), tone: i === 0 ? "bad" : undefined, tip: `${k.kind} · ${k.n}편` }))} />
-          <Src>{W.source} · 날씨 결항 {W.total.toLocaleString()}편 · 2023년부터는 사유가 &apos;기상&apos; 하나로만 기록돼 종류를 알 수 없음</Src>
-        </div>
-      )}
+    <Card title={`${jo === "전체" ? "제주행" : `${jo} → 제주`} 월별 결항률 · ${top.m}월 최다`}
+      right={<InfoTip><b className="font-medium text-ink">X</b> 월<br /><b className="font-medium text-ink">Y</b> 결항 ÷ 운항(%)<br />막대 위 아이콘 = 그 달 날씨 결항의 주된 원인({Object.values(KO).join("·")}), 2020~2022 제주행 기록 기준. 그 달 날씨 결항이 적거나 원인이 고르게 섞인 달은 표시 안 함</InfoTip>}>
+      <BarChart bars={m.map((x) => ({ key: x.m, label: `${x.m}월`, value: per(x), icon: iconOf(x.m), tone: x === top ? "bad" : undefined, tip: `${x.m}월 · 100편 중 ${per(x)}편 결항${iconOf(x.m) ? ` · 날씨 결항 주원인 ${KO[iconOf(x.m)!]}(2020~2022)` : ""}` }))} height={200} />
+      <Src>항공정보포털 · 결항률 {h.period.from.slice(0, 4)}.{+h.period.from.slice(4, 6)}~{h.period.to.slice(0, 4)}.{+h.period.to.slice(4, 6)} · 아이콘은 날씨 종류가 기록된 2020~2022 기준(2023년부터는 &apos;기상&apos;으로만 기록)</Src>
     </Card>
   );
 }

@@ -4,7 +4,8 @@
 // 회색 막대 + 강조는 의미 있는 1~2개(제일 덜/제일 많이), y축 눈금·범례·마우스 올리면 수치
 import { useEffect, useRef, useState } from "react";
 
-export type Bar = { key: string | number; label: string; value: number; tip: string; tone?: "ok" | "bad" | "accent"; sub?: string };
+export type Bar = { key: string | number; label: string; value: number; tip: string; tone?: "ok" | "bad" | "accent"; sub?: string; icon?: WxIcon };
+export type WxIcon = "wind" | "snow" | "typhoon" | "fog" | "rain" | "storm";
 
 const FILL = { ok: "var(--ok)", bad: "var(--bad)", accent: "var(--accent)" } as const;
 
@@ -24,7 +25,8 @@ export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryI
     return () => ro.disconnect();
   }, []);
   const hasSub = bars.some((b) => b.sub);
-  const H = height, pl = 40, pr = 8, pt = showValues ? 22 : 12, pb = hasSub ? 42 : 28;
+  const hasIcon = bars.some((b) => b.icon);
+  const H = height, pl = 40, pr = 8, pt = (showValues ? 22 : 12) + (hasIcon ? 22 : 0), pb = hasSub ? 42 : 28;
   const raw = Math.max(...bars.map((b) => b.value), 0);
   const step = niceStep(raw / 4);
   const max = maxIn ?? Math.max(step, Math.ceil(raw / step) * step);
@@ -52,6 +54,7 @@ export function BarChart({ bars, unit = "%", height = 220, tickEvery: tickEveryI
               <path d={roundTop(x, top, w, H - pb - top, Math.min(3, w / 2))} fill={fill} />
               {i % tickEvery === 0 && <text x={x + w / 2} y={hasSub ? H - 23 : H - 9} textAnchor="middle" fontSize={11} fill="var(--ink-3)">{b.label}</text>}
               {b.sub && <text x={x + w / 2} y={H - 8} textAnchor="middle" fontSize={10} fill="var(--ink-3)" className="num">{b.sub}</text>}
+              {b.icon && <WxGlyph kind={b.icon} x={x + w / 2} y={top - (showValues ? 22 : 6) - 9} />}
               {showValues && <text x={x + w / 2} y={top - 6} textAnchor="middle" fontSize={12} fontWeight={600} fill="var(--ink)" className="num">{fmtV(b.value)}{unit}</text>}
             </g>
           );
@@ -84,4 +87,17 @@ function roundTop(x: number, y: number, w: number, h: number, r: number) {
   if (h <= 0) return "";
   const rr = Math.min(r, h);
   return `M${x},${y + h} V${y + rr} Q${x},${y} ${x + rr},${y} H${x + w - rr} Q${x + w},${y} ${x + w},${y + rr} V${y + h} Z`;
+}
+
+// 날씨 선 아이콘(16px, 옅은 회색). 막대 위에 그 달의 주된 날씨 결항 원인을 표시
+function WxGlyph({ kind, x, y }: { kind: WxIcon; x: number; y: number }) {
+  const d: Record<WxIcon, string> = {
+    wind: "M2 5h8a2 2 0 1 0-2-2 M2 8h11a2 2 0 1 1-2 2 M2 11h6",
+    snow: "M8 1v14 M2 4.5l12 7 M2 11.5l12-7 M6 2.5l2 1.5 2-1.5 M6 13.5l2-1.5 2 1.5",
+    typhoon: "M13 4c-2-2.5-6.5-2.5-8.5 0S2 10 4 12 M3 12c2 2.5 6.5 2.5 8.5 0S14 6 12 4 M8 8m-1.5 0a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0",
+    fog: "M2 5h12 M1 8h14 M3 11h10",
+    rain: "M4 9a3 3 0 0 1 1-5.8A4 4 0 0 1 13 5a2.5 2.5 0 0 1 0 4H4 M5 11l-1 3 M9 11l-1 3 M13 11l-1 3",
+    storm: "M4 9a3 3 0 0 1 1-5.8A4 4 0 0 1 13 5a2.5 2.5 0 0 1 0 4H4 M9 9l-2 3h3l-2 3",
+  };
+  return <path d={d[kind]} transform={`translate(${x - 8},${y - 8})`} fill="none" stroke="var(--ink-3)" strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" />;
 }
