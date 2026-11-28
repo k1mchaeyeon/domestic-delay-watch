@@ -4,13 +4,14 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Airports, History, Leg, Satellite } from "@/lib/types";
 import { clock, dayLabel, delayTone, delayWord, dur, hm, mins, shift } from "@/lib/words";
-import { Airline, Answer, Badge, Card, KpiTile, Table, type Col } from "@/components/ui";
+import { Airline, Answer, Badge, Card, KpiTile, Src, Table, type Col } from "@/components/ui";
 import { SatMap } from "@/components/SatMap";
 import { CascadeGraph } from "@/components/CascadeGraph";
 import { cascadeOrigin, computeCascade, MTT_MIN } from "@/lib/cascade";
 
 type Ctx = { h: History; AP: Airports; ROT: Record<string, Leg[]>; DAYS: string[]; day: string; cur: Leg; goDay: (d: string, fno?: string) => void; SAT: Satellite | null };
 const koOf = (AP: Airports) => (c: string | null) => (c ? AP[c]?.ko ?? c : "");
+const KACS = (days: string[]) => `회전 테이블(한국공항공사 API) ${days.length ? `${dayLabel(days[0])}~${dayLabel(days[days.length - 1])}` : ""} · 지연 = 게이트 기준 15분 초과`;
 const legsOf = (rows: Leg[], r: Leg) => rows.filter((x) => x.reg_no === r.reg_no).sort((a, b) => (a.dep_sched_at < b.dep_sched_at ? -1 : 1));
 
 export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
@@ -45,6 +46,7 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
       <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <Card title="내가 탈 비행기는 지금 어디쯤?">
           <SatMap key={r.flight_no + day} legs={prev ? [prev, r] : [r]} cur={r} AP={AP} SAT={SAT} />
+          <Src>{KACS([day])} · 위치는 이륙·착륙 시각 사이를 나눈 추정 · 위성 사진 Esri</Src>
         </Card>
         <Card title={`${r.flight_no}, 다른 날은 어땠어요?`} right={<span>최근 {seen.length}번 운항 중 {lateN}번 늦음</span>}>
           <div className="mb-4 grid grid-cols-2 gap-3">{cmp("하루 전", shift(day, -1))}{cmp("일주일 전 같은 요일", shift(day, -7))}</div>
@@ -54,6 +56,7 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
               { key: "s", label: "출발", align: "right", render: (dd) => { const x = on(dd); return x ? <Badge tone={delayTone(x.dep_delay_gate_est_min)}>{delayWord(x.dep_delay_gate_est_min)}</Badge> : <span className="text-ink-3">운항 없음</span>; } },
             ]}
             rows={[...DAYS].reverse()} rowKey={(dd) => dd} selected={(dd) => dd === day} onRow={(dd) => on(dd) && goDay(dd, r.flight_no)} />
+          <Src>{KACS(DAYS)} · 같은 편명·같은 출발 공항</Src>
         </Card>
       </div>
 
@@ -64,6 +67,7 @@ export function LeaveTab({ h, AP, ROT, DAYS, day, cur, goDay, SAT }: Ctx) {
           { key: "no", label: "편명", wide: true, render: (l) => l.flight_no },
           { key: "s", label: "출발", align: "right", render: (l) => <Badge tone={delayTone(l.dep_delay_gate_est_min)}>{delayWord(l.dep_delay_gate_est_min)}</Badge> },
         ]} rows={legs} rowKey={(l) => l.flight_no + l.dep_sched_at} selected={(l) => l === r} />
+        <Src>{KACS([day])} · 같은 등록번호 {r.reg_no}의 그날 비행</Src>
       </Card>
 
       <Domino legs={legs} r={r} ko={ko} />
@@ -97,6 +101,7 @@ function Domino({ legs, r, ko }: { legs: Leg[]; r: Leg; ko: (c: string | null) =
         {extra > 0 && <span className="font-medium text-ink">→ 내 비행기 {moved > 0 ? <span className="text-bad">{dur(moved)} 더 늦어요</span> : <span className="text-ok">그대로예요</span>}</span>}
       </div>
       <CascadeGraph chain={chain} myFlight={r.flight_no} ko={ko} />
+      <Src>회전 테이블(한국공항공사 API) {r.flight_date} · 같은 기체 {r.reg_no} · 넘어온 지연 = max(0, 앞 편 착륙 + 5분 + 40분 − 출발 예정) · 슬라이더는 가정</Src>
     </Card>
   );
 }
@@ -139,6 +144,7 @@ export function AirportTab({ h, AP, ROT, day, cur }: Ctx) {
               </div>
             </>
           ) : <p className="text-ink-2">이 노선은 지난 기록이 부족해요</p>}
+          <Src>항공정보포털 운항 실적 {h.period.from.slice(0, 4)}.{+h.period.from.slice(4, 6)}~{h.period.to.slice(0, 4)}.{+h.period.to.slice(4, 6)} · 같은 노선·같은 출발 시각대 출발 지연 중간값·90% 값{hr ? ` · ${hr.flights.toLocaleString()}편` : ""}</Src>
         </Card>
         <Card title="다른 비행기로 바꿀 수 있을까요?" right={<span>{alts.length ? `${ko(r.arr_airport)} 가는 다음 비행기 ${alts.length}편` : "다음 비행기 없음"}</span>}>
           {alts.length ? (
@@ -149,6 +155,7 @@ export function AirportTab({ h, AP, ROT, day, cur }: Ctx) {
               { key: "s", label: "출발", align: "right", render: (x) => <Badge tone={delayTone(x.dep_delay_gate_est_min)}>{x.dep_delay_gate_est_min == null ? "예정" : delayWord(x.dep_delay_gate_est_min)}</Badge> },
             ] as Col<Leg>[]} rows={alts} rowKey={(x) => x.flight_no + x.dep_sched_at} />
           ) : <p className="text-ink-2">이날은 {ko(r.arr_airport)} 가는 다음 비행기가 없어요</p>}
+          <Src>{KACS([day])} · 같은 노선, 내 출발 예정 30분 전부터 5편</Src>
         </Card>
       </div>
     </div>
@@ -178,6 +185,7 @@ export function ArriveTab({ AP, cur }: Ctx) {
           <label className="flex flex-col gap-1 text-xs text-ink-2">공항에서 나오는 데(분)<input type="number" min={0} step={5} value={out} onChange={(e) => setOut(+e.target.value || 0)} className={`${field} w-28`} /></label>
           <label className="flex flex-col gap-1 text-xs text-ink-2">약속 장소까지(분)<input type="number" min={0} step={5} value={move} onChange={(e) => setMove(+e.target.value || 0)} className={`${field} w-28`} /></label>
         </div>
+        <Src>회전 테이블(한국공항공사 API) {r.flight_date} 착륙 기록 · 착륙 + 5분(게이트) + 입력한 시간으로 계산</Src>
         <p className="mt-4 text-xl font-semibold">{left >= 0 ? <>약속까지 <span className="text-ok">{dur(left)}</span> 남아요</> : <>약속에 <span className="text-bad">{dur(-left)}</span> 늦어요</>}</p>
       </Card>
     </div>

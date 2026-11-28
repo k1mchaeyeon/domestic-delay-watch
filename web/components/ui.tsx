@@ -153,3 +153,23 @@ export function Meter({ value, max, tone }: { value: number; max: number; tone?:
     </span>
   );
 }
+
+/** 그래프 아래 출처 한 줄(작고 옅게): 원천 · 집계 기간 · 지연 기준 · n */
+export function Src({ children }: { children: ReactNode }) {
+  return <p className="num mt-3 text-[11px] leading-4 text-ink-3">{children}</p>;
+}
+
+/** 페이지 맨 위: 질문 한 줄 + 큰 숫자 하나 + 답 한 문장 */
+export function Hero({ q, value, unit, tone, children }: { q: string; value: string; unit?: string; tone?: Tone; children: ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-end gap-x-5 gap-y-1">
+      <div className={`num text-[56px] font-semibold leading-none tracking-[-0.03em] ${tone ? TONE_TEXT[tone] : "text-ink"}`}>
+        {value}<small className="ml-1 text-2xl font-medium">{unit}</small>
+      </div>
+      <div className="min-w-0 pb-1">
+        <p className="text-[13px] text-ink-2">{q}</p>
+        <p className="text-lg font-semibold leading-snug text-ink [text-wrap:balance]">{children}</p>
+      </div>
+    </div>
+  );
+}
